@@ -67,12 +67,13 @@ public class Story : MonoBehaviour {
     /// <summary>Bu objeye en son push çağrısında verilen statedir.</summary>
     StoryState? currState;
 
-    void Start() {
-        for (var i=0; i>states.Length;i++) {
+    void Awake() {
+        for (var i=0; i<states.Length; i++) {
             states[i].owner = this;
+            states[i].stateCounter = i;
         }
 
-        currState = this.defaultState;
+        currState = null;
     }
 
     /// <summary>
@@ -80,9 +81,9 @@ public class Story : MonoBehaviour {
     /// </summary>
     /// <param name="state">StoryManager tarafından gönderilen state</param>
     public void onPush(StoryState? state, bool forced=false) {
-        openActives(state ?? defaultState, forced);
         openForcedActives(state ?? defaultState, forced);
         closeForceCloseds(state ?? defaultState, forced);
+        openActives(state ?? defaultState, forced);
         setBackgroundImage(state ?? defaultState);
 
         currState = state ?? defaultState;
@@ -129,11 +130,7 @@ public class Story : MonoBehaviour {
 
         StoryState c = (StoryState)currState;
 
-        if (c.stateCounter == null) {
-            c.stateCounter = 0;
-        }
-
-        var tmp = states[(int)(++c.stateCounter)];
+        var tmp = states[(int)c.stateCounter+1];
 
         if (tmp.nextActivity != null) {
             var state = tmp.nextActivity.defaultState;
@@ -148,11 +145,11 @@ public class Story : MonoBehaviour {
         }
 
         else {
+            tmp.owner = this;
             tmp.pusherState = new PusherState{state=tmp};
+
             StoryManager.pushStory(tmp);
         }
-
-        currState = c;
     }
 
     #region util
