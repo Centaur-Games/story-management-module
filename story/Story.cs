@@ -29,16 +29,27 @@ public struct StoryState {
     /// değişikliklerinde iç sayacın bozulmaması için kullanılan sayaç</summary>
     public int? stateCounter;
 
-    //// <summary>callbacks to be called on push</summary>
-    public UnityEvent<StoryState?> onPush;
-    //// <summary>callbacks to be called on pop</summary>
-    public UnityEvent<StoryState?> onPop;
+    /// <summary> storymanager tarafidan yapilan state degisikliklerinde cagirilacak dinleyiciler</summary>
+    public StoryPushListeners listeners;
 
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
 
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
+}
+
+[System.Serializable]
+public struct StoryPushListeners {
+    //// <summary>callbacks to be called on push</summary>
+    public UnityEvent<StoryState?> onPush;
+    //// <summary>callbacks to be called on pop</summary>
+    public UnityEvent<StoryState?> onPop;
+
+    //// <summary>callbacks to be called on push</summary>
+    public UnityEvent<StoryState?> onForcedPush;
+    //// <summary>callbacks to be called on pop</summary>
+    public UnityEvent<StoryState?> onForcedPop;
 }
 
 public class PusherState {
@@ -86,7 +97,11 @@ public class Story : MonoBehaviour {
 
         currState = state ?? defaultState;
 
-        currState?.onPush.Invoke(currState);
+        if (forced) {
+            currState?.listeners.onForcedPush.Invoke(currState);
+        } else {
+            currState?.listeners.onPush.Invoke(currState);
+        }
     }
 
     /// <summary>
@@ -106,7 +121,12 @@ public class Story : MonoBehaviour {
             closeForcedActives((StoryState)currState, true);
         }
 
-        currState?.onPop.Invoke(currState);
+        if (closeForced) {
+            currState?.listeners.onForcedPop.Invoke(currState);
+        } else {
+            currState?.listeners.onPop.Invoke(currState);
+        }
+
         currState = null;
     }
 
