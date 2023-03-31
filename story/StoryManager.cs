@@ -10,6 +10,8 @@ public class StoryManager : MonoBehaviour {
     static Stack<StoryState> storyStack;
     public static StoryManager instance;
 
+    public static int pendingAnims = 0;
+
     void Awake() {
         if (instance != null) {
             throw new System.Exception("StoryManager is initialized for second time.");
@@ -22,12 +24,20 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void resetHistory() {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         var tmp = storyStack.Pop();
         storyStack.Clear();
         pushStory(tmp);
     }
 
     public static void resetStory() {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         var curr = storyStack.Peek();
 
         while(storyStack.Count > 0 && storyStack.Peek().owner == curr.owner) {
@@ -38,10 +48,18 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void pushNextState() {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         getCurrent().owner.switchToNextState();
     }
 
     public static void replaceStory(StoryState? storyState) {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         if (storyState == null) throw new System.Exception("push with null state");
 
         if (storyStack.Count > 0) {
@@ -52,6 +70,10 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void pushStory(StoryState? storyState) {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         if (storyState == null) throw new System.Exception("push with null state");
 
         StoryState c = (StoryState)storyState;
@@ -65,10 +87,18 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void backStory(int cnt) {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         popStory(cnt);
     }
 
     static StoryState? popStory(int cnt) {
+        if (pendingAnims > 0) {
+            throw new System.Exception("animation pending.");
+        }
+
         StoryState tmp;
 
         if(storyStack.Count <= 1) return null;

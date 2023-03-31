@@ -12,11 +12,19 @@ public class AnimatedObject : MonoBehaviour
                 gameObject.SetActive(false);
                 return;
             }
+
+            StoryManager.pendingAnims++;
             animator.Play("out");
         } else {
             gameObject.SetActive(true);
-            if(animator == null)  animator = GetComponent<Animator>();
-            if(animator.runtimeAnimatorController != null)  animator.Play("entry");
+
+            if(animator == null) {
+                animator = GetComponent<Animator>();
+            }
+
+            if(animator.runtimeAnimatorController != null) {
+                animator.Play("entry");
+            }
         }
     }
 
@@ -26,11 +34,20 @@ public class AnimatedObject : MonoBehaviour
                 gameObject.SetActive(false);
                 return;
             }
+
+            StoryManager.pendingAnims++;
             animator.Play("outPop");
         } else {
             gameObject.SetActive(true);
-            if(animator == null)  animator = GetComponent<Animator>();
-            if(animator.runtimeAnimatorController != null)  animator.Play("entryPop");
+
+            if(animator == null) {
+                animator = GetComponent<Animator>();
+            }
+
+            if(animator.runtimeAnimatorController != null) {
+                StoryManager.pendingAnims++;
+                animator.Play("entryPop");
+            }
         }
     }
 }
