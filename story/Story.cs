@@ -37,7 +37,7 @@ public struct StoryState {
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
     /// <summary>switchToNextState cağırıldığında pushlanacak olan aktivite</summary>
-    public PuzzleEvent nextActivity;
+    public Story nextActivity;
 
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
@@ -106,9 +106,6 @@ public class Story : MonoBehaviour {
 
         if (closeForced) {
             closeForcedActives((StoryState)currState, true);
-            GalleryManager.instance.remove(((StoryState)currState).pushToGalleryAfter);
-        } else {
-            GalleryManager.instance.push(((StoryState)currState).pushToGalleryAfter);
         }
 
         currState?.onPop.Invoke(currState);
