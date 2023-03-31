@@ -23,6 +23,7 @@ public class AnimatedObject : MonoBehaviour
             }
 
             if(animator.runtimeAnimatorController != null) {
+                StoryManager.pendingAnims++;
                 animator.Play(entryAnim);
             }
         }
