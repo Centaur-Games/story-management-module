@@ -13,6 +13,8 @@ public class StoryManager : MonoBehaviour {
     public static int pendingAnims = 0;
 
     void Awake() {
+        pendingAnims = 0;
+
         if (instance != null) {
             throw new System.Exception("StoryManager is initialized for second time.");
         }
