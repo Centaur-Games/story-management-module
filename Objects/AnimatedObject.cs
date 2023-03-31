@@ -4,12 +4,20 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimatedObject : MonoBehaviour
 {
+    bool hasPendingAnim = false;
     Animator animator;
 
     void _pop(bool state, string outAnim, string entryAnim) {
+        if (hasPendingAnim) {
+            throw new System.Exception("anim pending");
+        }
+
+        hasPendingAnim = true;
+
         if(!state) {
             if(animator == null || animator.runtimeAnimatorController == null) {
                 gameObject.SetActive(false);
+                hasPendingAnim = false;
                 return;
             }
 
@@ -35,5 +43,16 @@ public class AnimatedObject : MonoBehaviour
 
     public void SetActivePop(bool isActive) {
         _pop(isActive, "outPop", "entryPop");
+    }
+
+    void closeObject() {
+        hasPendingAnim = false;
+        StoryManager.pendingAnims--;
+        gameObject.SetActive(false);
+    }
+
+    void openObject() {
+        hasPendingAnim = false;
+        StoryManager.pendingAnims--;
     }
 }
