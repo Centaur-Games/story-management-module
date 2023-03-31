@@ -36,8 +36,6 @@ public struct StoryState {
 
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
-    /// <summary>switchToNextState cağırıldığında pushlanacak olan aktivite</summary>
-    public Story nextActivity;
 
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
@@ -129,13 +127,7 @@ public class Story : MonoBehaviour {
 
         var tmp = states[(int)c.stateCounter+1];
 
-        if (tmp.nextActivity != null) {
-            var state = tmp.nextActivity.defaultState;
-            state.pusherState = new PusherState{state=c};
-            StoryManager.pushStory(state);
-        }
-
-        else if (tmp.nextStory != null) {
+        if (tmp.nextStory != null) {
             var state = tmp.nextStory.defaultState;
             state.pusherState = new PusherState{state=tmp};
             StoryManager.pushStory(state);
@@ -143,7 +135,7 @@ public class Story : MonoBehaviour {
 
         else {
             tmp.owner = this;
-            tmp.pusherState = new PusherState{state=tmp};
+            tmp.pusherState = new PusherState{state=c};
 
             StoryManager.pushStory(tmp);
         }
