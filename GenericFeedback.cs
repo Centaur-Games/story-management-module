@@ -8,10 +8,7 @@ using UnityEngine.UI;
 public class GenericFeedback : MonoBehaviour
 {
     private static GenericFeedback _genericFeedback;
-    public static GenericFeedback genericFeedback
-    {
-        get => _genericFeedback;
-    }
+    public static GenericFeedback genericFeedback { get => _genericFeedback; }
 
     [SerializeField] private Animator animator;
 
@@ -24,6 +21,9 @@ public class GenericFeedback : MonoBehaviour
 
     [SerializeField] private Sprite _redBackground;
     [SerializeField] private Sprite _greenBackground;
+
+    [SerializeField] private GameObject[] succesObjects;
+    [SerializeField] private GameObject[] failedObjects;
 
     private void Awake() { _genericFeedback = this; }
 
@@ -46,14 +46,20 @@ public class GenericFeedback : MonoBehaviour
         gf._feedbackContent.text = content;
         gf._feedbackMenu.SetActive(true);
         genericFeedback.animator.Play("entry");
-        if (isSuccess)
-        {
+        if (isSuccess) {
             gf._feedbackBackground.sprite = gf._greenBackground;
             gf._feedbackButtonText.text = "Devam";
-            return;
+        } else {
+            gf._feedbackBackground.sprite = gf._redBackground;
+            gf._feedbackButtonText.text = "Tekrar Dene";
         }
-        gf._feedbackBackground.sprite = gf._redBackground;
-        gf._feedbackButtonText.text = "Tekrar Dene";
+
+        foreach(var e in isSuccess ? gf.succesObjects : gf.failedObjects) {
+            e.SetActive(true);
+        }
+        foreach(var e in !isSuccess ? gf.succesObjects : gf.failedObjects) {
+            e.SetActive(false);
+        }
     }
 
     /// <summary>
