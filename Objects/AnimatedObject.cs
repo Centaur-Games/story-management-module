@@ -12,6 +12,11 @@ public class AnimatedObject : MonoBehaviour
             throw new System.Exception("anim pending");
         }
 
+        if(state == gameObject.activeInHierarchy){
+            Debug.Log($"{gameObject.name} objesi zaten {(state ? "açık" : "kapalı")}.");
+            return;
+        }
+
         hasPendingAnim = true;
 
         if(!state) {
