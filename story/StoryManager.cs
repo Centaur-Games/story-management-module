@@ -48,16 +48,16 @@ public class StoryManager : MonoBehaviour {
         pushStory(curr.owner.defaultState);
     }
 
-    public static void pushNextState() {
-        if (pendingAnims > 0) {
+    public static void pushNextState(bool ignorePendingAnims=false) {
+        if (pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
 
-        getCurrent().owner.switchToNextState();
+        getCurrent().owner.switchToNextState(ignorePendingAnims);
     }
 
-    public static void replaceStory(StoryState? storyState) {
-        if (pendingAnims > 0) {
+    public static void replaceStory(StoryState? storyState, bool ignorePendingAnims=false) {
+        if (pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
 
@@ -67,11 +67,11 @@ public class StoryManager : MonoBehaviour {
             storyStack.Pop().owner.onPop(closeForced: true);
         }
 
-        pushStory(storyState);
+        pushStory(storyState, ignorePendingAnims);
     }
 
-    public static void pushStory(StoryState? storyState) {
-        if (pendingAnims > 0) {
+    public static void pushStory(StoryState? storyState, bool ignorePendingAnims=false) {
+        if (pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
 
@@ -95,8 +95,8 @@ public class StoryManager : MonoBehaviour {
         popStory(cnt);
     }
 
-    static StoryState? popStory(int cnt) {
-        if (pendingAnims > 0) {
+    static StoryState? popStory(int cnt, bool ignorePendingAnims=false) {
+        if (pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
 

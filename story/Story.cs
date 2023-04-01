@@ -134,7 +134,7 @@ public class Story : MonoBehaviour {
     /// Bağlı olduğu story objesinin sonraki storysinin ya da aktivitesini
     /// StoryManager'e pushlar
     /// </summary>
-    public void switchToNextState() {
+    public void switchToNextState(bool ignorePendingAnims=false) {
         if (StoryManager.pendingAnims > 0) {
             throw new System.Exception("animation pending.");
         }
@@ -150,14 +150,14 @@ public class Story : MonoBehaviour {
         if (tmp.nextStory != null) {
             var state = tmp.nextStory.defaultState;
             state.pusherState = new PusherState{state=tmp};
-            StoryManager.pushStory(state);
+            StoryManager.pushStory(state, ignorePendingAnims);
         }
 
         else {
             tmp.owner = this;
             tmp.pusherState = new PusherState{state=c};
 
-            StoryManager.pushStory(tmp);
+            StoryManager.pushStory(tmp, ignorePendingAnims);
         }
     }
 
