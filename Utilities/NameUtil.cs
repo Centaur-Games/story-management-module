@@ -1,16 +1,18 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 
-
 public class NameUtil : MonoBehaviour {
-    [SerializeField] UnityEngine.UI.Button continueButton;
+    [SerializeField] Button[] buttons;
     TMP_InputField input;
 
     UnityAction<string> act;
 
     void _act(string val) {
-        continueButton.interactable = val.Length > 2;
+        foreach(var button in buttons) {
+            button.interactable = val.Length > 2;
+        }
         PlayerPrefs.SetString("name", val);
         PlayerPrefs.Save();
     }
@@ -22,13 +24,15 @@ public class NameUtil : MonoBehaviour {
 
         input = GetComponent<TMP_InputField>();
 
-        if (input == null || continueButton == null) {
+        if (input == null || buttons.Length < 1) {
             throw new System.Exception(
                 "input or continue button is null on NameUtil"
             );
         }
 
-        continueButton.interactable = false;
+        foreach(var button in buttons) {
+            button.interactable = false;
+        }
 
         act = (string val) => {
             _act(val);
