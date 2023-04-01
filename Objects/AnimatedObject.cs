@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(AnimatorHelper))]
 [RequireComponent(typeof(Animator))]
 public class AnimatedObject : MonoBehaviour
 {
