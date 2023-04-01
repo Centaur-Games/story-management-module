@@ -8,6 +8,7 @@ using UnityEngine.Events;
 // kullanmak için text mesh pro gerekir
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DialogManager : MonoBehaviour {
+    [SerializeField] bool runOnStart = true;
     [SerializeField] List<string> text;
     [SerializeField] [Range(0.02f,1)] float multiple = 0.02f;  
     [SerializeField] UnityEvent before;
@@ -26,6 +27,8 @@ public class DialogManager : MonoBehaviour {
         }
 
         field.text = "";
+
+        if(!runOnStart) return;
 
         if(currentCoroutine != null) StopCoroutine(currentCoroutine);
         currentCoroutine = start(0);
