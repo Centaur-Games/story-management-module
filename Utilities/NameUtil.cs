@@ -4,13 +4,13 @@ using UnityEngine.Events;
 
 
 public class NameUtil : MonoBehaviour {
-    UnityEngine.UI.Button continueButton;
+    [SerializeField] UnityEngine.UI.Button continueButton;
     TMP_InputField input;
 
     UnityAction<string> act;
 
     void _act(string val) {
-        continueButton.interactable = val.Length < 2;
+        continueButton.interactable = val.Length > 2;
         PlayerPrefs.SetString("name", val);
         PlayerPrefs.Save();
     }
@@ -27,6 +27,8 @@ public class NameUtil : MonoBehaviour {
                 "input or continue button is null on NameUtil"
             );
         }
+
+        continueButton.interactable = false;
 
         act = (string val) => {
             _act(val);
