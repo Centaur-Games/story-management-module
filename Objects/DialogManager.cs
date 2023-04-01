@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,6 +13,8 @@ public class DialogManager : MonoBehaviour {
     [SerializeField] UnityEvent before;
     [SerializeField] UnityEvent after;
     TextMeshProUGUI field;
+
+    [SerializeField] SpecialEvent[] specialEvents;
 
     // şu anda kullanılan coroutine'dir
     public IEnumerator currentCoroutine;
@@ -33,6 +36,7 @@ public class DialogManager : MonoBehaviour {
     // daktilo şeklinde yazdırır
     IEnumerator start(int index) {
         before.Invoke();
+        callSpecialEvents(index, dialogEventType.onStart);
 
         string replacedString = text[index].Replace("{name}", PlayerPrefs.HasKey("name") ? PlayerPrefs.GetString("name") : "İsimsiz");
 
@@ -45,6 +49,7 @@ public class DialogManager : MonoBehaviour {
             field.text = newText;
         }
 
+        callSpecialEvents(index, dialogEventType.onFinish);
         after.Invoke();
     }
 
@@ -54,4 +59,23 @@ public class DialogManager : MonoBehaviour {
 
         StartCoroutine(currentCoroutine);
     }
+
+    void callSpecialEvents(int textIndex, dialogEventType type) {
+        foreach(var e in specialEvents) {
+            if(e.textIndex != textIndex || e.type != type) continue;
+            e.events.Invoke();
+        }
+    }
+}
+
+[Serializable]
+public class SpecialEvent {
+    public int textIndex;
+    public dialogEventType type;
+    public UnityEvent events;
+}
+
+public enum dialogEventType {
+    onStart = 0,
+    onFinish,
 }
