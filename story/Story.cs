@@ -135,7 +135,7 @@ public class Story : MonoBehaviour {
     /// StoryManager'e pushlar
     /// </summary>
     public void switchToNextState(bool ignorePendingAnims=false) {
-        if (StoryManager.pendingAnims > 0) {
+        if (StoryManager.pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
 

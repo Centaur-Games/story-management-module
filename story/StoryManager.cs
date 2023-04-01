@@ -95,7 +95,7 @@ public class StoryManager : MonoBehaviour {
         popStory(cnt);
     }
 
-    static StoryState? popStory(int cnt, bool ignorePendingAnims=false) {
+    public static StoryState? popStory(int cnt, bool ignorePendingAnims=false) {
         if (pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }

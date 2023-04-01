@@ -8,7 +8,7 @@ public class AnimatedObject : MonoBehaviour
 
     void _pop(bool state, string outAnim, string entryAnim) {
         if (hasPendingAnim) {
-            throw new System.Exception("anim pending");
+            throw new System.Exception($"{gameObject.name} anim pending");
         }
 
         if(state == gameObject.activeInHierarchy){
