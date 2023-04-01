@@ -119,6 +119,7 @@ public class Story : MonoBehaviour {
 
         if (closeForced) {
             closeForcedActives((StoryState)currState, true);
+            openForceCloseds((StoryState)currState, true);
         }
 
         if (closeForced) {
@@ -217,6 +218,18 @@ public class Story : MonoBehaviour {
         } else {
             foreach(var obj in state.iForcedActiveObjects) {
                 obj.SetActive(false);
+            }
+        }
+    }
+
+    void openForceCloseds(StoryState state, bool forced=true) {
+        if (forced) {
+            foreach(var obj in state.iForcedClosedObjects) {
+                obj.SetActivePop(true);
+            }
+        } else {
+            foreach(var obj in state.iForcedClosedObjects) {
+                obj.SetActive(true);
             }
         }
     }
