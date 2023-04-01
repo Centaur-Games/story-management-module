@@ -59,4 +59,36 @@ public class AnimatedObject : MonoBehaviour
         hasPendingAnim = false;
         StoryManager.pendingAnims--;
     }
+
+    public void go(Vector2 newPos) {
+        targetPos = newPos;
+        animating = true;
+    }
+
+    bool animating;
+    Vector2 targetPos;
+    [SerializeField] float lambda;
+    [SerializeField] float epsilon;
+
+    void Start() {
+        animating = false;
+        targetPos = transform.position;
+    }
+
+    void Update() {
+        if (!animating) {
+            return;
+        }
+
+        float exp = 1 - Mathf.Exp(-lambda * Time.deltaTime);
+        transform.position = Vector2.Lerp(
+            transform.position,
+            targetPos,
+            exp
+        );
+
+        if (exp > 1-epsilon) {
+            animating = false;
+        }
+    }
 }
