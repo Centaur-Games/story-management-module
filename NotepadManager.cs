@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class NotepadManager : MonoBehaviour {
     public RectTransform notepadRect;
@@ -10,6 +11,13 @@ public class NotepadManager : MonoBehaviour {
     static int page;
 
     public AnimatedObject[] startEntries;
+
+    [Button("Disable All")]
+    void closeAll() {
+        for(int i = 0; i < notepadRect.childCount; i++) {
+            notepadRect.GetChild(i).gameObject.SetActive(false);
+        }
+    }
 
     public NotepadManager() {
         if (instance == null) {
