@@ -60,29 +60,37 @@ public class AnimatedObject : MonoBehaviour
         StoryManager.pendingAnims--;
     }
 
-    public void go(Vector2 newPos) {
-        targetPos = newPos;
+    [System.Obsolete("Bunun yerine go(Vector2) kullan")]
+    public void go(string vector) {
+        var x = vector.Split("|");
+        go(new Vector2(float.Parse(x[0]), float.Parse(x[1])));
+    }
+
+    public void go(Vector2 vector) {
+        targetPos = vector;
         animating = true;
     }
 
-    bool animating;
+    bool animating = false;
     Vector2 targetPos;
-    [SerializeField] float lambda;
-    [SerializeField] float epsilon;
+    RectTransform rectTransform;
+    [SerializeField] [Range(1,10)] float speed = 5;
+    [SerializeField] float epsilon = 0.1f;
 
     void Start() {
         animating = false;
-        targetPos = transform.position;
+
+        rectTransform = GetComponent<RectTransform>();
+        targetPos = rectTransform.anchoredPosition;
     }
 
     void Update() {
-        if (!animating) {
-            return;
-        }
+        if (!animating) return;
+        if(rectTransform == null) rectTransform = GetComponent<RectTransform>();
 
-        float exp = 1 - Mathf.Exp(-lambda * Time.deltaTime);
-        transform.position = Vector2.Lerp(
-            transform.position,
+        float exp = 1 - Mathf.Exp(-speed * Time.deltaTime);
+        rectTransform.anchoredPosition = Vector2.Lerp(
+            rectTransform.anchoredPosition,
             targetPos,
             exp
         );
