@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// StoryState storylerin duruma göre açık tuttuğu objeler ve diyalogları,
@@ -10,18 +11,24 @@ using UnityEngine.Events;
 public struct StoryState {
     /// <summary>Bu durumun bağlı olduğu story</summary>
     [HideInInspector] public Story owner;
+
+    [ShowIf("canVisible")]
     /// <summary>Bu durum pushlandığında yüklenmesi beklenen image</summary>
     public Sprite bgSprite;
 
+    [ShowIf("canVisible")]
     /// <summary>Eklemeleli olarak açılacak objeler, state poplandığında kapatılır.</summary>
     public AnimatedObject[] iActiveObjects;
 
+    [ShowIf("canVisible")]
     /// <summary>Zorla açılacak objeler, state poplandığında kapatılmaz.</summary>
     public AnimatedObject[] iForcedActiveObjects;
 
+    [ShowIf("canVisible")]
     /// <summary>Zorla kapatılacak objeler</summary>
     public AnimatedObject[] iForcedClosedObjects;
 
+    [ShowIf("canVisible")]
     /// <summary>State poplandığında galeriye eklenecek fotograf/fotograflar</summary>
     public Image[] pushToGalleryAfter;
 
@@ -29,6 +36,7 @@ public struct StoryState {
     /// değişikliklerinde iç sayacın bozulmaması için kullanılan sayaç</summary>
     public int? stateCounter;
 
+    [ShowIf("canVisible")]
     /// <summary> storymanager tarafidan yapilan state degisikliklerinde cagirilacak dinleyiciler</summary>
     public StoryPushListeners listeners;
 
@@ -37,6 +45,10 @@ public struct StoryState {
 
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
+
+    bool canVisible() {
+        return nextStory == null;
+    }
 }
 
 [System.Serializable]
