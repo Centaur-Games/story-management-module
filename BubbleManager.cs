@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BubbleManager : MonoBehaviour
@@ -82,20 +83,6 @@ public class BubbleManager : MonoBehaviour
 
     void Update()
     {
-#if DEBUG
-        if (Input.GetKeyDown(KeyCode.Q))
-            vertical = BubbleVertical.Bottom;
-        if (Input.GetKeyDown(KeyCode.W))
-            vertical = BubbleVertical.Top;
-        if (Input.GetKeyDown(KeyCode.E))
-            horizontal = BubbleHorizontal.Left;
-        if (Input.GetKeyDown(KeyCode.R))
-            horizontal = BubbleHorizontal.Right;
-        if (Input.GetKeyDown(KeyCode.T))
-            positionDestination = new Vector3(-500, 0, 0);
-        if (Input.GetKeyDown(KeyCode.Y))
-            positionDestination = new Vector3(500, 0, 0);
-#endif
         if (_chancingRotation)
             ChangeRotation();
         if (_chancingPosition)
@@ -124,6 +111,26 @@ public class BubbleManager : MonoBehaviour
         }
         _rectTransform.localPosition = Vector3.Lerp(_positionStart, _positionEnd, _positionT);
         _positionT += Time.deltaTime * _positionSpeed;
+    }
+
+    public void ChangeVertical(BubbleVertical vertical)
+    {
+        this.vertical = vertical;
+    }
+
+    public void ChangeHorizontal(BubbleHorizontal horizontal)
+    {
+        this.horizontal = horizontal;
+    }
+
+    public void SetX(float x)
+    {
+        positionDestination = new Vector3(x, positionDestination.y);
+    }
+
+    public void SetY(float y)
+    {
+        positionDestination = new Vector3(positionDestination.x, y);
     }
 }
 
