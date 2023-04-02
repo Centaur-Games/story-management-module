@@ -44,6 +44,7 @@ public class NotepadManager : MonoBehaviour {
         }
 
         entries.Add((entry, entry.GetComponent<RectTransform>()));
+        showNotepadPage(page);
     }
 
     public void popNotepadEntry(AnimatedObject entry) {
@@ -53,6 +54,7 @@ public class NotepadManager : MonoBehaviour {
                 break;
             }
         }
+        showNotepadPage(page);
     }
 
     static void cleanShownElements(bool back=false) {
