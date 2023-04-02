@@ -46,7 +46,7 @@ public class DropdownMenu : MonoBehaviour
             var __item = Instantiate(__prefab, __content);
             
             var __itemTransform = __item.GetComponent<RectTransform>();
-            __itemTransform.anchoredPosition = new Vector3(0, -__height * (.5f + x));
+            __itemTransform.anchoredPosition = new Vector3(0, -__height * x);
 
             __item.GetComponentInChildren<TextMeshProUGUI>().text = _items[x];
 
