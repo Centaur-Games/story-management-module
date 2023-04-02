@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -113,27 +114,19 @@ public class BubbleManager : MonoBehaviour
         _positionT += Time.deltaTime * _positionSpeed;
     }
 
-    public void ChangeVertical(BubbleVertical vertical)
-    {
-        this.vertical = vertical;
-    }
+    public void SetVerticalBottom() { this.vertical = BubbleVertical.Bottom; }
+    public void SetVerticalTop() { this.vertical = BubbleVertical.Top; }
+    public void SetHorizantalLeft() { this.horizontal = BubbleHorizontal.Left; }
+    public void SetHorizantalRight() { this.horizontal = BubbleHorizontal.Right; }
 
-    public void ChangeHorizontal(BubbleHorizontal horizontal)
-    {
-        this.horizontal = horizontal;
+    public void SetPosition(string vector) {
+        var x = vector.Split("|");
+        SetPosition(new Vector3(float.Parse(x[0]), float.Parse(x[1])));
     }
-
-    public void SetX(float x)
-    {
-        positionDestination = new Vector3(x, positionDestination.y);
-    }
-
-    public void SetY(float y)
-    {
-        positionDestination = new Vector3(positionDestination.x, y);
-    }
+    public void SetPosition(Vector3 vector) { positionDestination = vector; }
 }
 
+[Serializable]
 [System.ComponentModel.DefaultValue(BubbleVertical.Bottom)]
 public enum BubbleVertical : byte
 {
@@ -141,6 +134,7 @@ public enum BubbleVertical : byte
     Top = 3,
 }
 
+[Serializable]
 [System.ComponentModel.DefaultValue(BubbleHorizontal.Left)]
 public enum BubbleHorizontal : byte
 {
