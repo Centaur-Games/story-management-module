@@ -6,6 +6,12 @@ public class AnimatedObject : MonoBehaviour
     bool hasPendingAnim = false;
     Animator animator;
 
+    System.Action After;
+
+    void Awake() {
+        animator = GetComponent<Animator>();
+    }
+
     void _pop(bool state, string outAnim, string entryAnim) {
         if (hasPendingAnim) {
             throw new System.Exception($"{gameObject.name} anim pending");
@@ -49,10 +55,22 @@ public class AnimatedObject : MonoBehaviour
         _pop(isActive, "outPop", "entryPop");
     }
 
+    public void playAnim(string anim, System.Action after) {
+        gameObject.SetActive(true);
+        animator.Play(anim);
+    }
+
     void closeObject() {
         hasPendingAnim = false;
         StoryManager.pendingAnims--;
         gameObject.SetActive(false);
+
+        if(After != null) After();
+    }
+
+    void closeAnimation() {
+        hasPendingAnim = false;
+        StoryManager.pendingAnims--;
     }
 
     void openObject() {

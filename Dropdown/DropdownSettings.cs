@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +5,7 @@ using UnityEngine.UI;
 public class DropdownSettings : MonoBehaviour
 {
     [SerializeField] private Transform _content;
+    [SerializeField] private RectTransform _scrollview;
     [SerializeField] private GameObject _buttonPrefab;
     [SerializeField] private Button _mainButton;
     
@@ -16,6 +15,7 @@ public class DropdownSettings : MonoBehaviour
 
     public Transform content { get => _content; }
     public RectTransform contentTransform { get => _contentTransform; }
+    public RectTransform scrollViewTransform { get => _scrollview; }
     public GameObject buttonPrefab { get => _buttonPrefab; }
     public Button mainButton { get => _mainButton; }
     public TextMeshProUGUI mainButtonText { get => _mainButtonText; }
