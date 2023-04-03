@@ -13,6 +13,12 @@ public class AnimatedObject : MonoBehaviour
     }
 
     void _pop(bool state, string outAnim, string entryAnim) {
+        if(!state && !gameObject.activeInHierarchy) {
+            gameObject.SetActive(false);
+            Debug.Log($"{gameObject.name} adlı animasyonlu obje zor kullanılarak kapatıldı");
+            return;
+        }
+
         if (hasPendingAnim) {
             throw new System.Exception($"{gameObject.name} anim pending");
         }
@@ -55,8 +61,8 @@ public class AnimatedObject : MonoBehaviour
         _pop(isActive, "outPop", "entryPop");
     }
 
-    public void playAnim(string anim, System.Action after) {
-        gameObject.SetActive(true);
+    public void playAnim(string anim, System.Action after, bool activator = true) {
+        if(activator) gameObject.SetActive(true);
         animator.Play(anim);
     }
 
@@ -67,6 +73,8 @@ public class AnimatedObject : MonoBehaviour
 
         if(After != null) After();
     }
+
+    void disableObject() { gameObject.SetActive(false); }
 
     void closeAnimation() {
         hasPendingAnim = false;
