@@ -8,6 +8,7 @@ public class DropdownSettings : MonoBehaviour
     [SerializeField] private RectTransform _scrollview;
     [SerializeField] private GameObject _buttonPrefab;
     [SerializeField] private Button _mainButton;
+    [SerializeField] public GameObject expandImage;
     
     private TextMeshProUGUI _mainButtonText;
     private RectTransform _mainButtonTransform;
@@ -21,7 +22,7 @@ public class DropdownSettings : MonoBehaviour
     public TextMeshProUGUI mainButtonText { get => _mainButtonText; }
     public RectTransform mainButtonTransform { get => _mainButtonTransform; }
 
-    private void Start()
+    private void Awake()
     {
         _mainButtonText = _mainButton.GetComponentInChildren<TextMeshProUGUI>();
         _mainButtonTransform = _mainButton.GetComponent<RectTransform>();

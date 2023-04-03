@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class DropdownMenu : MonoBehaviour
 {
+    bool isLocked = false;
+
+    [SerializeField] public string correctAnswer;
     [SerializeField] private DropdownSettings _datas;
     [SerializeField] private Color SelectedColor;
     [SerializeField] private Color NonSelectColor;
@@ -57,6 +60,8 @@ public class DropdownMenu : MonoBehaviour
 
             
             __itemButton.onClick.AddListener(() => {
+                if(isLocked) throw new System.Exception("Bu öğe kilitli");
+
                 if(selectedButton != null) selectedButton.gameObject.GetComponent<Image>().color = NonSelectColor;
                 selectedButton = __itemButton;
                 selectedButton.gameObject.GetComponent<Image>().color = SelectedColor;
@@ -77,7 +82,7 @@ public class DropdownMenu : MonoBehaviour
         try {
             foreach(var e in  affecteds) e.playAnim(!_open ? "entry" : "out", () => {
                 if(!_open) _rectTransform.sizeDelta = _datas.mainButtonTransform.rect.size;
-            });
+            }, false);
         } catch {
             Debug.Log("Dropdown hızdan dolayı kısıtlandı");
             return;
@@ -88,8 +93,12 @@ public class DropdownMenu : MonoBehaviour
         if (_open) _rectTransform.sizeDelta = _startSize;
     }
 
-    public void closeAll() {
+    public void closeAll(Button button) {
         _open = true;
+        if(((Vector2)Input.mousePosition).CheckBox(_rectTransform.position, _rectTransform.sizeDelta, _rectTransform.pivot.x, _rectTransform.pivot.y)) {
+            button.Select();
+            return;
+        }
         ButtonClick();
     }
 
@@ -100,11 +109,35 @@ public class DropdownMenu : MonoBehaviour
     }
 
     public void ResetValue() {
+        if(isLocked) throw new System.Exception("Bu öğe kilitli");
+
         _choosen = -1;
         _datas.mainButtonText.text = _emptyText;
     }
 
     public int GetChoosenIndex() {
         return _choosen;
+    }
+
+    public void UnLock() {
+        if(!isLocked) { Debug.LogWarning("Bu öğe zaten açık ama tekrardan açıyorum"); }
+        isLocked = false;
+
+        _datas.mainButton.interactable = true;
+        _datas.expandImage.SetActive(true);
+
+        _open = true;
+        ButtonClick();
+    }
+
+    public void Lock() {
+        if(isLocked) { Debug.LogWarning("Bu öğe zaten kilitli ama tekrardan kilitliyorum"); }
+        isLocked = true;
+
+        _datas.mainButton.interactable = false;
+        _datas.expandImage.SetActive(false);
+
+        _open = true;
+        ButtonClick();
     }
 }
