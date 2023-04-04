@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class AnimatedObject : MonoBehaviour
 {
+    [SerializeField] bool AnimPending = true;
     bool hasPendingAnim = false;
     Animator animator;
 
@@ -19,7 +20,7 @@ public class AnimatedObject : MonoBehaviour
             return;
         }
 
-        if (hasPendingAnim) {
+        if (hasPendingAnim && AnimPending) {
             throw new System.Exception($"{gameObject.name} anim pending");
         }
 
@@ -86,7 +87,7 @@ public class AnimatedObject : MonoBehaviour
         StoryManager.pendingAnims--;
     }
 
-    [System.Obsolete("Bunun yerine go(Vector2) kullan")]
+    // [System.Obsolete("Bunun yerine go(Vector2) kullan")]
     public void go(string vector) {
         var x = vector.Split("|");
         go(new Vector2(float.Parse(x[0]), float.Parse(x[1])));
