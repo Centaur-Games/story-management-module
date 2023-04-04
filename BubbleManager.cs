@@ -17,7 +17,7 @@ public class BubbleManager : MonoBehaviour {
     public void SetVerticalTop() { this.vertical = BubbleVertical.Top; }
 
     float rotationTime;
-    Vector3 rotationStartAngles;
+    Quaternion rotationStart;
     Vector3 rotationTargetAngles;
 
     float positionTime;
@@ -48,7 +48,7 @@ public class BubbleManager : MonoBehaviour {
                 rotationTargetAngles.y = 0;
             }
 
-            rotationStartAngles = _rectTransform.localRotation.eulerAngles;
+            rotationStart = _rectTransform.localRotation;
             rotationTime = 0;
 
             changingRot = true;
@@ -66,7 +66,7 @@ public class BubbleManager : MonoBehaviour {
                 rotationTargetAngles.x = 0;
             }
 
-            rotationStartAngles = _rectTransform.localRotation.eulerAngles;
+            rotationStart = _rectTransform.localRotation;
             rotationTime = 0;
 
             changingRot = true;
@@ -83,17 +83,8 @@ public class BubbleManager : MonoBehaviour {
     }
 
     void Start() {
-        float __x = 180;
-        float __y = 180;
-
-        if (_vertical == BubbleVertical.Top) {
-            __x = 0;
-        } if (_horizontal == BubbleHorizontal.Right) {
-            __y = 0;
-        }
-
-        _rectTransform.localRotation = _textRectTransform.localRotation =
-            Quaternion.Euler(__x, __y, 0);
+        horizontal = _horizontal;
+        vertical = _vertical;
     }
 
     void Update() {
@@ -104,6 +95,7 @@ public class BubbleManager : MonoBehaviour {
     void ChangeRotation() {
         if (rotationTime > 1) {
             changingRot = false;
+            _rectTransform.localRotation = Quaternion.Euler(rotationTargetAngles);
             return;
         }
 
@@ -111,12 +103,10 @@ public class BubbleManager : MonoBehaviour {
             _textRectTransform.localRotation = Quaternion.Euler(rotationTargetAngles);
         }
 
-        _rectTransform.localRotation = Quaternion.Euler(
-            Vector3.Lerp(
-                rotationStartAngles,
-                rotationTargetAngles,
-                rotationTime
-            )
+        _rectTransform.localRotation = Quaternion.Lerp(
+            rotationStart,
+            Quaternion.Euler(rotationTargetAngles),
+            rotationTime
         );
 
         rotationTime += Time.deltaTime * _rotationSpeed;
@@ -125,6 +115,7 @@ public class BubbleManager : MonoBehaviour {
     void ChangePosition() {
         if (positionTime > 1) {
             changingPos = false;
+            _rectTransform.localPosition = positionTarget;
             return;
         }
 
