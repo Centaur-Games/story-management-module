@@ -3,6 +3,21 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
+[System.Serializable]
+public struct BubbleVertAlignment {
+    public BubbleVertical vert;
+    public BubbleHorizontal hor;
+}
+
+[System.Serializable]
+public struct DialogData {
+    public DialogManager d_mngr;
+    public BubbleManager b_mngr;
+    public int index;
+    public Vector2 pos;
+    public BubbleVertAlignment alignment;
+}
+
 /// <summary>
 /// StoryState storylerin duruma göre açık tuttuğu objeler ve diyalogları,
 /// sonraki aktivite ve hikayeyi belirleyen bir veri tipidir.
@@ -19,6 +34,10 @@ public struct StoryState {
     [ShowIf("canVisible")]
     /// <summary>Eklemeleli olarak açılacak objeler, state poplandığında kapatılır.</summary>
     public AnimatedObject[] iActiveObjects;
+
+    [ShowIf("canVisible")]
+    /// <summary>the dialog calls</summary>
+    public DialogData[] iActiveDialogs;
 
     [ShowIf("canVisible")]
     /// <summary>Zorla açılacak objeler, state poplandığında kapatılmaz.</summary>
@@ -105,6 +124,7 @@ public class Story : MonoBehaviour {
         openForcedActives(state ?? defaultState, forced);
         closeForceCloseds(state ?? defaultState, forced);
         openActives(state ?? defaultState, forced);
+        openAndSetDialogs(state ?? defaultState, forced);
         setBackgroundImage(state ?? defaultState);
 
         currState = state ?? defaultState;
@@ -128,6 +148,7 @@ public class Story : MonoBehaviour {
         }
 
         closeActives((StoryState)currState, closeForced);
+        closeDialogs((StoryState)currState, closeForced);
 
         if (closeForced) {
             closeForcedActives((StoryState)currState, true);
@@ -255,6 +276,32 @@ public class Story : MonoBehaviour {
             foreach(var obj in state.iForcedClosedObjects) {
                 obj.SetActive(false);
             }
+        }
+    }
+
+    void openAndSetDialogs(StoryState state, bool forced=false) {
+        foreach (var dialog in state.iActiveDialogs) {
+            dialog.d_mngr.open(dialog.index);
+
+            if (dialog.b_mngr.horizontal != dialog.alignment.hor) {
+                Debug.Log($"hor set to {dialog.alignment.hor} from {dialog.b_mngr.horizontal}");
+                dialog.b_mngr.horizontal = dialog.alignment.hor;
+            }
+
+            if (dialog.b_mngr.vertical != dialog.alignment.vert) {
+                Debug.Log($"vert set to {dialog.alignment.vert} from {dialog.b_mngr.vertical}");
+                dialog.b_mngr.vertical = dialog.alignment.vert;
+            }
+
+            if (dialog.b_mngr.positionDestination != (Vector3)dialog.pos) {
+                dialog.b_mngr.SetPosition(dialog.pos);
+            }
+        }
+    }
+
+    void closeDialogs(StoryState state, bool forced=false) {
+        foreach (var dialog in state.iActiveDialogs) {
+            // TODO: dialog.d_mngr.close(dialog.index);
         }
     }
 
