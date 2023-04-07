@@ -1,74 +1,86 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class GenericFeedback : MonoBehaviour
-{
-    private static GenericFeedback _genericFeedback;
-    public static GenericFeedback genericFeedback { get => _genericFeedback; }
+public class GenericFeedback : MonoBehaviour {
+    static GenericFeedback instance;
+    public static GenericFeedback genericFeedback { get => instance; }
 
-    [SerializeField] private Animator animator;
+    [SerializeField] Animator animator;
 
-    [SerializeField] private GameObject _feedbackMenu;
-    [SerializeField] private Image _feedbackBackground;
-    [SerializeField] private TextMeshProUGUI _feedbackTitle;
-    [SerializeField] private TextMeshProUGUI _feedbackContent;
-    [SerializeField] private Button _feedbackButton;
-    [SerializeField] private TextMeshProUGUI _feedbackButtonText;
+    [SerializeField] GameObject _feedbackMenu;
 
-    [SerializeField] private Sprite _redBackground;
-    [SerializeField] private Sprite _greenBackground;
+    [SerializeField] Image _feedbackBackground;
 
-    [SerializeField] private GameObject[] succesObjects;
-    [SerializeField] private GameObject[] failedObjects;
+    [SerializeField] TextMeshProUGUI _feedbackTitle;
+    [SerializeField] TextMeshProUGUI _feedbackContent;
 
-    private void Awake() { _genericFeedback = this; }
+    [SerializeField] Button _feedbackButton;
+    [SerializeField] TextMeshProUGUI _feedbackButtonText;
+
+    [SerializeField] Sprite _redBackground;
+    [SerializeField] Sprite _greenBackground;
+
+    // please don't write names wrong.
+    [SerializeField] GameObject[] succesObjects;
+    [SerializeField] GameObject[] failedObjects;
+
+    void Awake() { instance = this; }
 
     /// <summary>
-    /// Tek butonlu a��l�r kapan�r men�y� �al��t�r�r<br /><br />
-    /// <paramref name="title"/> �st k�s�mdaki siyahla yaz�l� ba�l�k alan�<br />
-    /// <paramref name="content"/> �st k�s�mdaki siyahla yaz�l� ba�l�k alan�<br />
-    /// <paramref name="isSuccess"/> ��in ba�ar�l�(true) m� yoksa ba�ar�s�z(false) m� oldu�unu belirler. e�er true d�nd�r�l�rse arkaplan ye�il olur ve button'a "Devam" yazar e�er false d�nd�r�l�rse arkaplan k�rm�z� olur ve button'a "Tekrar Dene" yazar<br />
-    /// <paramref name="onClick"/> Button'a t�klay�nca �al��acak etkinli�i belirler
+    /// Tek butonlu açılır kapanır menüyü Çalıştırır
     /// </summary>
-    /// <param name="title">�st k�s�mdaki siyahla yaz�l� ba�l�k alan�</param>
-    /// <param name="content">Ba�l�k ile buton aras�ndaki beyaz i�erik alan�</param>
-    /// <param name="isSuccess"> ��in ba�ar�l�(true) m� yoksa ba�ar�s�z(false) m� oldu�unu belirler. e�er true d�nd�r�l�rse arkaplan ye�il olur ve button'a "Devam" yazar e�er false d�nd�r�l�rse arkaplan k�rm�z� olur ve button'a "Tekrar Dene" yazar</param>
-    /// <param name="onClick">Button'a t�klay�nca �al��acak etkinli�i belirler</param>
-    public static void Show(string title, string content, bool isSuccess, UnityAction onClick)
-    {
-        var gf = _genericFeedback;
-        gf._feedbackButton.onClick.AddListener(onClick);
-        gf._feedbackTitle.text = title;
-        gf._feedbackContent.text = content;
-        gf._feedbackMenu.SetActive(true);
-        genericFeedback.animator.Play("entry");
+    /// <param name="title">üst kısımdaki siyahla yazılı başlık alanı</param>
+    /// <param name="content">Başlık ile buton arasındaki beyaz içerik alanı</param>
+    /// <param name="isSuccess"> İşlemin başarılı(true) mı yoksa 
+    /// başarısız(false) mı olduğunu belirler. Eğer true döndürürse arkaplan
+    /// yeşil olur ve button'a "Devam" yazar eğer false döndürülürse arkaplan
+    /// kırmızı olur ve button'a "Tekrar Dene" yazar</param>
+    /// <param name="onClick">Button'a tıklayınca çağırılacak aksiyonu belirler</param>
+    void _Show(string title, string content, bool isSuccess, UnityAction onClick) {
+        _feedbackButton.onClick.AddListener(onClick);
+        _feedbackTitle.text = title;
+        _feedbackContent.text = content;
+        _feedbackMenu.SetActive(true);
+
+        Debug.LogWarning("FIXME: GenericFeedback._Show disables anim event firing.");
+        animator.fireEvents = false;
+        animator.Play("entry");
+
         if (isSuccess) {
-            gf._feedbackBackground.sprite = gf._greenBackground;
-            gf._feedbackButtonText.text = "Devam";
+            _feedbackBackground.sprite = _greenBackground;
+            _feedbackButtonText.text = "Devam";
         } else {
-            gf._feedbackBackground.sprite = gf._redBackground;
-            gf._feedbackButtonText.text = "Tekrar Dene";
+            _feedbackBackground.sprite = _redBackground;
+            _feedbackButtonText.text = "Tekrar Dene";
         }
 
-        foreach(var e in isSuccess ? gf.succesObjects : gf.failedObjects) {
+        foreach(var e in isSuccess ? succesObjects : failedObjects) {
             e.SetActive(true);
         }
-        foreach(var e in !isSuccess ? gf.succesObjects : gf.failedObjects) {
+
+        foreach(var e in !isSuccess ? succesObjects : failedObjects) {
             e.SetActive(false);
         }
     }
 
     /// <summary>
-    /// A��lm�� men�y� kapat�r
+    /// Açılır menüyü kapatır
     /// </summary>
-    public static void Close()
-    {
-        var gf = _genericFeedback;
-        gf._feedbackButton.onClick.RemoveAllListeners();
-        genericFeedback.animator.Play("out");
+    void _Close() {
+        _feedbackButton.onClick.RemoveAllListeners();
+
+        Debug.LogWarning("FIXME: GenericFeedback._Show disables anim event firing.");
+        animator.fireEvents = false;
+        animator.Play("out");
+    }
+
+    public static void Show(string title, string content, bool isSuccess, UnityAction act) {
+        instance._Show(title, content, isSuccess, act);
+    }
+
+    public static void Close() {
+        instance._Close();
     }
 }
