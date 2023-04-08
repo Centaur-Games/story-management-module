@@ -9,6 +9,7 @@ public class Dragable : MonoBehaviour {
     Vector3 startPos;
     Vector3 targetPos;
     DropTarget lastOwner;
+    bool dragging;
 
     (GameObject go, DropTarget target) hovering = (null, null);
 
@@ -26,6 +27,11 @@ public class Dragable : MonoBehaviour {
     }
 
     public void OnDrag(GameObject target, DropTarget drop) {
+        if (!dragging) {
+            lastOwner?.callee.OnElementDragStart(this);
+            dragging = true;
+        }
+
         if (target == null) {
             if (hovering.go != null) {
                 hovering.target.callee.OnHoverExit(this);
@@ -34,13 +40,13 @@ public class Dragable : MonoBehaviour {
         } else {
             if (hovering.go != null && hovering.go != target) {
                 hovering.target.callee.OnHoverExit(this);
+                hovering = (null, null);
             } else if (hovering.go == target) {
                 hovering.target.callee.OnHoverStay(this);
             } else {
                 drop.callee.OnHoverEnter(this);
+                hovering = (target, drop);
             }
-
-            hovering = (target, drop);
         }
 
         rectTransform.position = Input.mousePosition;
@@ -51,11 +57,8 @@ public class Dragable : MonoBehaviour {
             hovering.target.callee.OnHoverExit(this);
         }
 
-        if (hovering.go != null && hovering.go != lastOwner) {
-            lastOwner?.callee.OnHoverExit(this);
-        }
-
-        hovering = (null, null);
+        lastOwner?.callee.OnElementDragEnd(this, target);
+        dragging = false;
 
         if (target == null) {
             onDropCancel();
@@ -70,6 +73,8 @@ public class Dragable : MonoBehaviour {
                 onDropCancel();
             }
         }
+
+        hovering = (null, null);
     }
 
     public void onDropCancel() {
@@ -82,7 +87,8 @@ public class Dragable : MonoBehaviour {
             targetPos = startPos;
         }
 
-        lastOwner?.callee.OnDropCancel(this);
+        lastOwner?.callee.OnElementDragCancel(this);
+        hovering.target?.callee.OnDropCancel(this);
     }
 }
 
