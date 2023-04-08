@@ -29,10 +29,11 @@ public class DragDropManager : MonoBehaviour {
             }
         }
 
-        if (Input.GetKey(KeyCode.Mouse1)) {
-            if (currDragable != null && !lastClickDropped) {
+        if (Input.GetKeyDown(KeyCode.Mouse1)) {
+            if (currDragable != null) {
                 lastClickDropped = true;
                 currDragable.onDropCancel();
+                currDragable = null;
             }
         }
 
