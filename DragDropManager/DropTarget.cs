@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public interface IDropTargetListener {
     /// <summary>Called once when a Dragable object holding mouse pointer enters the target</summary>
@@ -31,9 +29,6 @@ public interface IDropTargetListener {
 }
 
 public class DropTarget : MonoBehaviour {
-    GraphicRaycaster raycaster;
-    EventSystem eventSystem;
-
     [SerializeField] MonoBehaviour toBeCalled;
 
     void Start() {
