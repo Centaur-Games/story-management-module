@@ -68,21 +68,10 @@ public class DragDropManager : MonoBehaviour {
     }
 
     void PollDropTarget() {
-        Raycast();
+        var tmpTarget = GetDropTarget();
+        lastTarget = tmpTarget;
 
-        GameObject lastGameobject = null;
-
-        foreach (var result in results) {
-            if (result.gameObject.tag != "dropTarget") continue;
-
-            var tmpTarget = GetDropTarget();
-
-            lastGameobject = result.gameObject;
-            lastTarget = tmpTarget;
-            break;
-        }
-
-        currDragable?.OnDrag(lastGameobject, lastTarget);
+        currDragable?.OnDrag(lastTarget?.gameObject, lastTarget);
     }
 
     DropTarget GetDropTarget() {
