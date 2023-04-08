@@ -1,89 +1,86 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class DragDropManager : MonoBehaviour
-{
-    [SerializeField] private Dragable[] _dragableObjects;
-    [SerializeField] private Dragable[] _dropableAreas;
+public class DragDropManager : MonoBehaviour {
+    GraphicRaycaster raycaster;
+    EventSystem eventSystem;
 
-    private Dragable _choosenDragable;
-    private Vector3 _pastPosition;
+    Dragable currDragable;
+    DropTarget lastTarget;
+    bool lastClickDropped = false;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            var __item = CheckIfOnDragableObject();
-            if (__item != null)
-            {
-                _choosenDragable = __item;
-                _pastPosition = Input.mousePosition;
+    List<RaycastResult> results = new List<RaycastResult>();
+
+    void Start() {
+        raycaster = GetComponent<GraphicRaycaster>();
+        eventSystem = GetComponent<EventSystem>();
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            if (currDragable == null) getPointingDragable();
+
+            if (currDragable == null) { // if still null after pointer raycast
+                lastClickDropped = true; // KeyUp should drop and call no events.
             }
-            return;
+
+            getPointingDropTarget();
         }
-        if (Input.GetKey(KeyCode.Mouse0))
-        {
-            if (_choosenDragable == null)
+
+        if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            if (lastClickDropped) {
+                lastClickDropped = false;
                 return;
-            var move = Input.mousePosition - _pastPosition;
-            _choosenDragable.rectTransform.position = _choosenDragable.rectTransform.position + move;
-            _pastPosition = Input.mousePosition;
-            return;
+            }
+
+            if (currDragable != null) {
+                currDragable.OnDrop(lastTarget);
+                currDragable = null;
+            }
         }
-        if (Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            if (_choosenDragable == null)
+    }
+
+    void getPointingDragable() {
+        Raycast();
+
+        foreach (var result in results) {
+            if (result.gameObject.tag == "dragable") {
+                var dragable = result.gameObject.GetComponent<Dragable>();
+                currDragable = dragable;
                 return;
-            var __dropable = CheckIfOnDropableArea(_choosenDragable.rectTransform.position, _choosenDragable.rectTransform.rect.size);
-            if (__dropable != null)
-            {
-                if (__dropable.connectedItem == null)
-                {
-                    if (_choosenDragable.connectedItem != null)
-                        _choosenDragable.connectedItem.connectedItem = null;
-                    _choosenDragable.connectedItem = __dropable;
-                    __dropable.connectedItem = _choosenDragable;
+            }
+        }
+    }
+
+    void getPointingDropTarget() {
+        Raycast();
+
+        GameObject lastGameobject = null;
+
+        foreach (var result in results) {
+            if (result.gameObject.tag == "dropTarget") {
+                var tmpTarget = result.gameObject.GetComponent<DropTarget>();
+
+                if (currDragable == null) {
+                    tmpTarget.callee.OnClickDown();
                 }
+
+                lastGameobject = result.gameObject;
+                lastTarget = tmpTarget;
+                break;
             }
-            _choosenDragable.rectTransform.position = _choosenDragable.backPosition;
-            _choosenDragable = null;
         }
+
+        currDragable.OnDrag(lastGameobject, lastTarget);
     }
 
-    private Dragable CheckIfOnDragableObject()
-    {
-        foreach(var x in _dragableObjects)
-        {
-            if (x.CheckMouse())
-            {
-                return x;
-            }
-        }
-        return null;
-    }
+    void Raycast() {
+        var eventData = new PointerEventData(eventSystem);
+        eventData.position = Input.mousePosition;
 
-    private Dragable CheckIfOnDropableArea()
-    {
-        foreach (var x in _dropableAreas)
-        {
-            if (x.CheckMouse())
-            {
-                return x;
-            }
-        }
-        return null;
-    }
-
-    private Dragable CheckIfOnDropableArea(Vector2 position, Vector2 size)
-    {
-        foreach (var x in _dropableAreas)
-        {
-            if (x.CheckBox(position, size))
-            {
-                return x;
-            }
-        }
-        return null;
+        results.Clear();
+        raycaster.Raycast(eventData, results);
     }
 }
