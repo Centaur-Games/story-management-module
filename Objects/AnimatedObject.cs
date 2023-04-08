@@ -65,6 +65,7 @@ public class AnimatedObject : MonoBehaviour
     public void playAnim(string anim, System.Action after, bool activator = true) {
         if(activator) gameObject.SetActive(true);
         animator.Play(anim);
+        After = after;
     }
 
     void closeObject() {
@@ -72,7 +73,10 @@ public class AnimatedObject : MonoBehaviour
         StoryManager.pendingAnims--;
         gameObject.SetActive(false);
 
-        if(After != null) After();
+        if(After != null) {
+            After();
+            After = null;
+        }
     }
 
     void disableObject() { gameObject.SetActive(false); }
