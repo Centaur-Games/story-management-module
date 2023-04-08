@@ -20,13 +20,19 @@ public class DragDropManager : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            if (currDragable == null) getPointingDragable();
+            if (currDragable == null) {
+                getPointingDragable();
 
-            if (currDragable == null) { // if still null after pointer raycast
-                lastClickDropped = true; // KeyUp should drop and call no events.
+                if (currDragable == null) { // if still null after pointer raycast
+                    lastClickDropped = true; // KeyUp should drop and call no events.
+                }
             }
+        }
 
-            getPointingDropTarget();
+        if (Input.GetKey(KeyCode.Mouse0)) {
+            if (currDragable != null) {
+                PollDropTarget();
+            }
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0)) {
@@ -36,7 +42,7 @@ public class DragDropManager : MonoBehaviour {
             }
 
             if (currDragable != null) {
-                currDragable.OnDrop(lastTarget);
+                currDragable.OnDrop(GetDropTarget());
                 currDragable = null;
             }
         }
@@ -54,26 +60,38 @@ public class DragDropManager : MonoBehaviour {
         }
     }
 
-    void getPointingDropTarget() {
+    void PollDropTarget() {
         Raycast();
 
         GameObject lastGameobject = null;
 
         foreach (var result in results) {
-            if (result.gameObject.tag == "dropTarget") {
-                var tmpTarget = result.gameObject.GetComponent<DropTarget>();
+            if (result.gameObject.tag != "dropTarget") continue;
 
-                if (currDragable == null) {
-                    tmpTarget.callee.OnClickDown();
-                }
+            var tmpTarget = GetDropTarget();
 
-                lastGameobject = result.gameObject;
-                lastTarget = tmpTarget;
-                break;
+            if (currDragable == null) {
+                tmpTarget.callee.OnClickDown();
             }
+
+            lastGameobject = result.gameObject;
+            lastTarget = tmpTarget;
+            break;
         }
 
-        currDragable.OnDrag(lastGameobject, lastTarget);
+        currDragable?.OnDrag(lastGameobject, lastTarget);
+    }
+
+    DropTarget GetDropTarget() {
+        Raycast();
+
+        foreach (var result in results) {
+            if (result.gameObject.tag != "dropTarget") continue;
+
+            return result.gameObject.GetComponent<DropTarget>();
+        }
+
+        return null;
     }
 
     void Raycast() {

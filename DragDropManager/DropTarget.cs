@@ -6,7 +6,7 @@ public interface IDropTargetListener {
     public void OnHoverEnter(Dragable dragable);
     public void OnHoverExit(Dragable dragable);
     public void OnHoverStay(Dragable dragable);
-    public void OnDrop(Dragable dragable);
+    public void OnDrop(Dragable dragable); // you shall throw if you reject
     public void OnDropCancel(Dragable dragable);
     public void OnClickDown();
 }
