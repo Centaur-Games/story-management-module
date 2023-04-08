@@ -68,13 +68,22 @@ public class Dragable : MonoBehaviour {
         if (target == null) {
             onDropCancel();
         } else {
+            var oldStart = startPos;
+            var oldTarget = targetPos;
+            var oldRectPos = rectTransform.position;
+
             try {
-                target.callee.OnDrop(this);
                 startPos = Input.mousePosition;
                 targetPos = Input.mousePosition;
                 rectTransform.position = Input.mousePosition;
+
+                target.callee.OnDrop(this);
                 lastOwner = target;
             } catch (DragableRejected) {
+                startPos = oldStart;
+                targetPos = oldTarget;
+                rectTransform.position = oldRectPos;
+
                 onDropCancel();
             }
         }
@@ -83,6 +92,8 @@ public class Dragable : MonoBehaviour {
     }
 
     public void onDropCancel() {
+        dragging = false;
+
         if (freeDragable) {
             rectTransform.position = Input.mousePosition;
             targetPos = Input.mousePosition;
@@ -95,11 +106,14 @@ public class Dragable : MonoBehaviour {
         lastOwner?.callee.OnElementDragCancel(this);
         hovering.target?.callee.OnDropCancel(this);
     }
+
+    public void SetTargetPos(Vector3 pos) {
+        targetPos = pos;
+    }
 }
 
 [System.Serializable]
-public class DragableRejected : System.Exception
-{
+public class DragableRejected : System.Exception {
     public DragableRejected() { }
     public DragableRejected(string message) : base(message) { }
     public DragableRejected(string message, System.Exception inner) : base(message, inner) { }
