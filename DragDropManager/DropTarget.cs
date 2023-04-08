@@ -30,6 +30,7 @@ public interface IDropTargetListener {
 
 public class DropTarget : MonoBehaviour {
     [SerializeField] MonoBehaviour toBeCalled;
+    public bool active;
 
     void Start() {
         if (!(toBeCalled is IDropTargetListener)) {

@@ -6,6 +6,8 @@ public class Dragable : MonoBehaviour {
     [SerializeField] bool freeDragable = false;
     [SerializeField] float returnSpeed = 1;
 
+    public bool active = true;
+
     Vector3 startPos;
     Vector3 targetPos;
     DropTarget lastOwner;

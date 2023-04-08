@@ -21,7 +21,7 @@ public class DragDropManager : MonoBehaviour {
     void Update() {
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             if (currDragable == null) {
-                getPointingDragable();
+                currDragable = getPointingDragable();
 
                 if (currDragable == null) { // if still null after pointer raycast
                     lastClickDropped = true; // KeyUp should drop and call no events.
@@ -56,16 +56,19 @@ public class DragDropManager : MonoBehaviour {
         }
     }
 
-    void getPointingDragable() {
+    Dragable getPointingDragable() {
         Raycast();
 
         foreach (var result in results) {
-            if (result.gameObject.tag == "dragable") {
-                var dragable = result.gameObject.GetComponent<Dragable>();
-                currDragable = dragable;
-                return;
+            if (result.gameObject.tag != "dragable") continue;
+
+            var dragable = result.gameObject.GetComponent<Dragable>();
+            if (dragable.active) {
+                return dragable;
             }
         }
+
+        return null;
     }
 
     void PollDropTarget() {
@@ -81,7 +84,10 @@ public class DragDropManager : MonoBehaviour {
         foreach (var result in results) {
             if (result.gameObject.tag != "dropTarget") continue;
 
-            return result.gameObject.GetComponent<DropTarget>();
+            var tmpRes = result.gameObject.GetComponent<DropTarget>();
+            if (tmpRes.active) {
+                return tmpRes;
+            }
         }
 
         return null;
