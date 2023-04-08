@@ -18,14 +18,17 @@ public class Dragable : MonoBehaviour {
     void Start() {
         rectTransform = GetComponent<RectTransform>();
         startPos = rectTransform.position;
+        targetPos = rectTransform.position;
     }
 
     void Update() {
-        rectTransform.position = Vector3.Lerp(
-            rectTransform.position,
-            targetPos,
-            1-Mathf.Exp(-returnSpeed * Time.deltaTime)
-        );
+        if (!dragging) {
+            rectTransform.position = Vector3.Lerp(
+                rectTransform.position,
+                targetPos,
+                1-Mathf.Exp(-returnSpeed * Time.deltaTime)
+            );
+        }
     }
 
     public void OnDrag(GameObject target, DropTarget drop) {
