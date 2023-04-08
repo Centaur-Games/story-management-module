@@ -29,8 +29,15 @@ public class DragDropManager : MonoBehaviour {
             }
         }
 
+        if (Input.GetKey(KeyCode.Mouse1)) {
+            if (currDragable != null && !lastClickDropped) {
+                lastClickDropped = true;
+                currDragable.onDropCancel();
+            }
+        }
+
         if (Input.GetKey(KeyCode.Mouse0)) {
-            if (currDragable != null) {
+            if (currDragable != null && !lastClickDropped) {
                 PollDropTarget();
             }
         }
@@ -69,10 +76,6 @@ public class DragDropManager : MonoBehaviour {
             if (result.gameObject.tag != "dropTarget") continue;
 
             var tmpTarget = GetDropTarget();
-
-            if (currDragable == null) {
-                tmpTarget.callee.OnClickDown();
-            }
 
             lastGameobject = result.gameObject;
             lastTarget = tmpTarget;
