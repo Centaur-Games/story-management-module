@@ -25,7 +25,7 @@ public class Dragable : MonoBehaviour {
         if (!dragging) {
             rectTransform.position = Vector3.Lerp(
                 rectTransform.position,
-                targetPos,
+                new Vector3((Screen.width/1920f) * targetPos.x, (Screen.height/1080f) * targetPos.y, 1),
                 1-Mathf.Exp(-returnSpeed * Time.deltaTime)
             );
         }
