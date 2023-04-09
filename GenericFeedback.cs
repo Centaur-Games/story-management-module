@@ -44,8 +44,6 @@ public class GenericFeedback : MonoBehaviour {
         _feedbackContent.text = content;
         _feedbackMenu.SetActive(true);
 
-        Debug.LogWarning("FIXME: GenericFeedback._Show disables anim event firing.");
-        animator.fireEvents = false;
         animator.Play("entry");
 
         if (isSuccess) {
@@ -63,6 +61,8 @@ public class GenericFeedback : MonoBehaviour {
         foreach(var e in !isSuccess ? succesObjects : failedObjects) {
             e.SetActive(false);
         }
+
+        gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -71,8 +71,6 @@ public class GenericFeedback : MonoBehaviour {
     void _Close() {
         _feedbackButton.onClick.RemoveAllListeners();
 
-        Debug.LogWarning("FIXME: GenericFeedback._Show disables anim event firing.");
-        animator.fireEvents = false;
         animator.Play("out");
     }
 
@@ -82,5 +80,10 @@ public class GenericFeedback : MonoBehaviour {
 
     public static void Close() {
         instance._Close();
+    }
+
+    void openObject() {}
+    void closeObject() {
+        gameObject.SetActive(false);
     }
 }
