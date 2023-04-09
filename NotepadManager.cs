@@ -1,125 +1,95 @@
-using System.Collections.Generic;
 using UnityEngine;
-using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 public class NotepadManager : MonoBehaviour {
-    public RectTransform notepadRect;
+    public int pageCount { get => transform.childCount; }
+    int currPage = 0;
 
-    public static NotepadManager instance;
-    public static List<(AnimatedObject go, RectTransform rect)> entries = new();
-    public static List<(AnimatedObject go, RectTransform rect)> shown = new();
-    static int page;
-
-    public AnimatedObject[] startEntries;
-
-    [Button("Disable All")]
-    void closeAll() {
-        for(int i = 0; i < notepadRect.childCount; i++) {
-            notepadRect.GetChild(i).gameObject.SetActive(false);
-        }
-    }
-
-    public NotepadManager() {
-        if (instance == null) {
-            instance = this;
-            entries.Clear();
-            shown.Clear();
-            page = 0;
-        } else {
-            throw new System.Exception("notepad initialized twice");
-        }
-    }
+    int traversalDepth = 0;
+    List<(bool open, GameObject obj)> childrenList;
 
     void Start() {
-        foreach(var a in startEntries) {
-            pushNotepadEntry(a);
+        TraverseChildren(gameObject);
+        ReloadPage();
+    }
+
+    void TraverseChildren(GameObject obj, int depthLimit = 2) {
+        traversalDepth++;
+
+        if (traversalDepth > depthLimit) {
+            traversalDepth--;
+            return;
+        }
+
+        foreach (var child in childOf(obj.transform)) {
+            childrenList.Add((false, child));
+            TraverseChildren(child);
+        }
+
+        traversalDepth--;
+    }
+
+    IEnumerable<GameObject> pages {
+        get => childOf(transform);
+    }
+
+    IEnumerable<GameObject> childOf(Transform obj) {
+        for (int i = 0; i < obj.childCount; i++) {
+            yield return obj.GetChild(i).gameObject;
         }
     }
 
-    public void pushNotepadEntry(AnimatedObject entry) {
-        foreach(var _entry in entries) {
-            if (_entry.go == entry) {
-                throw new System.Exception("entry pushed already");
+    public bool GetOpenStatus(GameObject obj) {
+        foreach(var child in childrenList) {
+            if (child.obj == obj) {
+                return child.open;
             }
         }
 
-        entries.Add((entry, entry.GetComponent<RectTransform>()));
-        showNotepadPage(page);
+        throw new System.Exception("obj not found");
     }
 
-    public void popNotepadEntry(AnimatedObject entry) {
-        for (int i = 0; i < entries.Count; i++) {
-            if (entries[i].go == entry) {
-                entries.RemoveAt(i);
-                break;
-            }
-        }
-        showNotepadPage(page);
-    }
+    public void openUntilObj(GameObject obj) {
+        GetOpenStatus(obj);
 
-    static void cleanShownElements(bool back=false) {
-        foreach(var element in shown) {
-            if (back) {
-                element.go.SetActivePop(false);
-            } else {
-                element.go.SetActive(false);
-            }
+        bool open = true;
+
+        for (int i=0; i < childrenList.Count; i++) {
+            if (childrenList[i].obj == obj) open = false;
+            childrenList[i] = (open, childrenList[i].obj);
         }
 
-        shown.Clear();
+        ReloadPage();
     }
 
-    static bool getNotepadPage(int pageNum, bool back=false) {
-        cleanShownElements(back);
+    public void openObj(GameObject obj) {
+        GetOpenStatus(obj);
 
-        int index = 0;
-        float currHeight = 0;
+        for (int i=0; i < childrenList.Count; i++) {
+            if (childrenList[i].obj != obj) continue;
 
-        while (currHeight+entries[index].rect.rect.height < instance.notepadRect.rect.height*(pageNum+1)) {
-            currHeight += entries[index].rect.rect.height;
-
-            if (currHeight > instance.notepadRect.rect.height*pageNum) {
-                shown.Add(entries[index]);
-            }
-
-            index++;
-            if (index > entries.Count-1) return false;
+            childrenList[i] = (true, obj);
         }
 
-        return true;
+        ReloadPage();
     }
 
-    public static bool showNotepadPage(int pageNum, bool back=false) {
-        bool resp = getNotepadPage(pageNum, back);
-
-        float y = 0;
-
-        foreach(var element in shown) {
-            element.rect.anchoredPosition = new Vector2(0, -y);
-
-            if (back) {
-                element.go.SetActivePop(true);
-            } else {
-                element.go.SetActive(true);
-            }
-
-            y+=element.rect.rect.height;
+    public void switchPage(int pageIndex) {
+        if (pageIndex > pageCount || pageIndex < 0) {
+            throw new System.Exception("page index exceeds page count");
         }
 
-        return resp;
+        currPage = pageIndex;
+        ReloadPage();
     }
 
-    public static void showNextNotepadPage() {
-        if (showNotepadPage(page+1)) {
-            page++;
+    public void ReloadPage() {
+        foreach(var child in childrenList) {
+            child.obj.SetActive(false);
         }
-    }
 
-    public static void showPrevNotepadPage() {
-        if (page <= 0) return;
-
-        if (showNotepadPage(page-1, true)) {
-            page--;
+        foreach(var child in childOf(transform.GetChild(currPage))) {
+            child.SetActive(GetOpenStatus(child));
         }
     }
 }
