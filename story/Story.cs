@@ -89,14 +89,14 @@ public class PusherState {
 
 public class Story : MonoBehaviour {
     /// <summary>Bu storyinin backgroundu</summary>
-    [SerializeField] Image bgImage;
+    [SerializeField] protected Image bgImage;
 
     /// <summary>Bu storynin içerdiği durumlar.</summary>
-    [SerializeField] StoryState[] states;
+    [SerializeField] protected StoryState[] states;
 
     /// <summary>Bu objenin herhangi bir state verilmeden pushlanması durumunda kullanılacak olan
     /// states dizisinin ilk elamanını dönden varsayılan durum</summary>
-    public StoryState defaultState {
+    public virtual StoryState defaultState {
         get {
             var tmp = states[0];
             tmp.owner = this;
@@ -105,7 +105,7 @@ public class Story : MonoBehaviour {
     }
 
     /// <summary>Bu objeye en son push çağrısında verilen statedir.</summary>
-    StoryState? currState;
+    protected StoryState? currState;
 
     void Awake() {
         for (var i=0; i<states.Length; i++) {
@@ -120,7 +120,7 @@ public class Story : MonoBehaviour {
     /// StoryManager tarafından bu story objesinin durumlarından birisinin geçmişe eklenmesi durumunda çağırılır.
     /// </summary>
     /// <param name="state">StoryManager tarafından gönderilen state</param>
-    public void onPush(StoryState? state, bool forced=false) {
+    public virtual void onPush(StoryState? state, bool forced=false) {
         openForcedActives(state ?? defaultState, forced);
         closeForceCloseds(state ?? defaultState, forced);
         openActives(state ?? defaultState, forced);
@@ -142,7 +142,7 @@ public class Story : MonoBehaviour {
     /// <param name="closeForced">Normal ileriye doğru sayfa değişimi olmadığında
     /// zorla açık tutulan objelerin kapatılıp kapatılmayacağını belirlemek 
     /// için StoryManager tarafından kullanılır</param>
-    public void onPop(bool closeForced=false) {
+    public virtual void onPop(bool closeForced=false) {
         if (currState == null) {
             throw new System.Exception("popped already");
         }
@@ -168,7 +168,7 @@ public class Story : MonoBehaviour {
     /// Bağlı olduğu story objesinin sonraki storysinin ya da aktivitesini
     /// StoryManager'e pushlar
     /// </summary>
-    public void switchToNextState(bool ignorePendingAnims=false) {
+    public virtual void switchToNextState(bool ignorePendingAnims=false) {
         if (StoryManager.pendingAnims > 0 && !ignorePendingAnims) {
             throw new System.Exception("animation pending.");
         }
@@ -197,7 +197,7 @@ public class Story : MonoBehaviour {
 
     #region util
 
-    void setBackgroundImage(StoryState state) {
+    protected void setBackgroundImage(StoryState state) {
         if (bgImage == null) {
             return;
         }
@@ -207,7 +207,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void openActives(StoryState state, bool forced=false) {
+    protected void openActives(StoryState state, bool forced=false) {
         if (forced) {
             foreach(var obj in state.iActiveObjects) {
                 obj.SetActivePop(true);
@@ -219,7 +219,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void closeActives(StoryState state, bool forced=false) {
+    protected void closeActives(StoryState state, bool forced=false) {
         if (forced) {
             foreach(var obj in state.iActiveObjects) {
                 obj.SetActivePop(false);
@@ -231,7 +231,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void openForcedActives(StoryState state, bool forced=false) {
+    protected void openForcedActives(StoryState state, bool forced=false) {
         if (forced) {
             foreach(var obj in state.iForcedActiveObjects) {
                 obj.SetActivePop(true);
@@ -243,7 +243,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void closeForcedActives(StoryState state, bool forced=false) {
+    protected void closeForcedActives(StoryState state, bool forced=false) {
         if (forced) {
             foreach(var obj in state.iForcedActiveObjects) {
                 obj.SetActivePop(false);
@@ -255,7 +255,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void openForceCloseds(StoryState state, bool forced=true) {
+    protected void openForceCloseds(StoryState state, bool forced=true) {
         if (forced) {
             foreach(var obj in state.iForcedClosedObjects) {
                 obj.SetActivePop(true);
@@ -267,7 +267,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void closeForceCloseds(StoryState state, bool forced=false) {
+    protected void closeForceCloseds(StoryState state, bool forced=false) {
         if (forced) {
             foreach (var obj in state.iForcedClosedObjects) {
                 obj.SetActivePop(false);
@@ -279,7 +279,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void openAndSetDialogs(StoryState state, bool forced=false) {
+    protected void openAndSetDialogs(StoryState state, bool forced=false) {
         foreach (var dialog in state.iActiveDialogs) {
             dialog.d_mngr.open(dialog.index);
 
@@ -299,7 +299,7 @@ public class Story : MonoBehaviour {
         }
     }
 
-    void closeDialogs(StoryState state, bool forced=false) {
+    protected void closeDialogs(StoryState state, bool forced=false) {
         foreach (var dialog in state.iActiveDialogs) {
             // TODO: dialog.d_mngr.close(dialog.index);
         }
