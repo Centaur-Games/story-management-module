@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DropdownMenu : MonoBehaviour
@@ -80,9 +82,8 @@ public class DropdownMenu : MonoBehaviour
     public void ButtonClick() {
         // animation
         try {
-            foreach(var e in  affecteds) e.playAnim(!_open ? "entry" : "out", () => {
-                if(!_open) _rectTransform.sizeDelta = _datas.mainButtonTransform.rect.size;
-            }, false);
+            foreach(var e in  affecteds) e.playAnim(!_open ? "entry" : "out", () => {}, false);
+            if(_open) _rectTransform.sizeDelta = _datas.mainButtonTransform.rect.size;
         } catch {
             Debug.Log("Dropdown hızdan dolayı kısıtlandı");
             return;
@@ -93,12 +94,22 @@ public class DropdownMenu : MonoBehaviour
         if (_open) _rectTransform.sizeDelta = _startSize;
     }
 
+    List<RaycastResult> results = new List<RaycastResult>();
     public void closeAll(Button button) {
         _open = true;
-        if(((Vector2)Input.mousePosition).CheckBox(_rectTransform.position, _rectTransform.sizeDelta, _rectTransform.pivot.x, _rectTransform.pivot.y)) {
-            button.Select();
-            return;
+        var eventData = new PointerEventData(GameManager.eventSystem);
+        eventData.position = Input.mousePosition;
+
+        results.Clear();
+        GameManager.raycaster.Raycast(eventData, results);
+
+        foreach (var result in results) {
+            if (result.gameObject.tag == "dropDownButton") {
+                button.Select();
+                return;
+            }
         }
+
         ButtonClick();
     }
 
