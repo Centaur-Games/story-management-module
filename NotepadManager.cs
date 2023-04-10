@@ -6,9 +6,9 @@ public class NotepadManager : MonoBehaviour {
     int currPage = 0;
 
     int traversalDepth = 0;
-    List<(bool open, GameObject obj)> childrenList;
+    List<(bool open, GameObject obj)> childrenList = new();
 
-    void Start() {
+    void Awake() {
         TraverseChildren(gameObject);
         ReloadPage();
     }
@@ -55,8 +55,8 @@ public class NotepadManager : MonoBehaviour {
         bool open = true;
 
         for (int i=0; i < childrenList.Count; i++) {
-            if (childrenList[i].obj == obj) open = false;
             childrenList[i] = (open, childrenList[i].obj);
+            if (childrenList[i].obj == obj) open = false;
         }
 
         ReloadPage();
@@ -85,11 +85,7 @@ public class NotepadManager : MonoBehaviour {
 
     public void ReloadPage() {
         foreach(var child in childrenList) {
-            child.obj.SetActive(false);
-        }
-
-        foreach(var child in childOf(transform.GetChild(currPage))) {
-            child.SetActive(GetOpenStatus(child));
+            child.obj.SetActive(child.open);
         }
     }
 }
