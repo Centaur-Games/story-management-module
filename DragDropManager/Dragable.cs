@@ -1,110 +1,123 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class Dragable : MonoBehaviour
-{
-    private RectTransform _transform;
-    public RectTransform rectTransform { get { return _transform; } }
+public class Dragable : MonoBehaviour {
+    RectTransform rectTransform;
 
-    private Dragable _connectedItem;
-    public Dragable connectedItem
-    {
-        get => _connectedItem;
-        set
-        {
-            if (_onDrag != null)
-            {
-                _onDrag(value);
+    [SerializeField] bool freeDragable = false;
+    [SerializeField] float returnSpeed = 1;
+
+    public bool active = true;
+
+    Vector3 startPos;
+    Vector3 targetPos;
+    DropTarget lastOwner;
+    bool dragging;
+
+    (GameObject go, DropTarget target) hovering = (null, null);
+
+    void Start() {
+        rectTransform = GetComponent<RectTransform>();
+        startPos = rectTransform.position;
+        targetPos = rectTransform.position;
+    }
+
+    void Update() {
+        if (!dragging) {
+            rectTransform.position = Vector3.Lerp(
+                rectTransform.position,
+                new Vector3((Screen.width/1920f) * targetPos.x, (Screen.height/1080f) * targetPos.y, 1),
+                1-Mathf.Exp(-returnSpeed * Time.deltaTime)
+            );
+        }
+    }
+
+    public void OnDrag(GameObject target, DropTarget drop) {
+        if (!dragging) {
+            lastOwner?.callee.OnElementDragStart(this);
+            dragging = true;
+        }
+
+        if (target == null) {
+            if (hovering.go != null) {
+                hovering.target.callee.OnHoverExit(this);
+                hovering = (null, null);
             }
-            _connectedItem = value;
-        }
-    }
-
-    private UnityAction<Dragable> _onDrag;
-
-    public UnityAction<Dragable> onDrag
-    {
-        set
-        {
-            _onDrag = value;
-        }
-    }
-
-    Vector3 _startPosition;
-    public Vector3 backPosition
-    {
-        get
-        {
-            if (_connectedItem == null)
-                return _startPosition;
-            return _connectedItem.rectTransform.position;
-        }
-    }
-
-    private void Start()
-    {
-        _transform = gameObject.GetComponent<RectTransform>();
-        _startPosition = _transform.position;
-    }
-
-    public bool CheckMouse()
-    {
-        var __mousePosition = Input.mousePosition;
-        var __transformPosition = _transform.position;
-        var __width = _transform.rect.width / 2;
-        var __height = _transform.rect.height / 2;
-        return !(__transformPosition.x + __width < __mousePosition.x |
-            __transformPosition.x - __width > __mousePosition.x |
-            __transformPosition.y + __height < __mousePosition.y |
-            __transformPosition.y - __height > __mousePosition.y);
-    }
-
-    public void GetBackToStart()
-    {
-        _connectedItem = null;
-        _transform.position = _startPosition;
-    }
-
-    /// <summary>
-    /// Bu objeyi bir dikdörtgen olarak hesaplayýp <paramref name="position"/> ve <paramref name="size"/> ile deðerleri verilen dikdörtgenle çarpýþtýðýný/[iç içe olduðunu] kontrol eder
-    /// </summary>
-    public bool CheckBox(Vector2 position, Vector2 size)
-    {
-        var __size = size / 2; // RectTransform boyutunu sað ve sola eþit olarak daðýtýyor. Mesela width deðeri 50 ise nesnenin boyutu saða doðru 25 sola doðru 25 olacaktýr
-        /* 
-         * Bir dikdörtgenin bütün noktalarýný hesaplayabilmek için 4 tane deðer yeterlidir
-         * Koordinat sistemine dik olan bir dikdörtgenin koordinatlarýný hesaplayabilmek için 4 sayý yeterlidir
-         * Örnek bir dikdörtgen: { (-1, -3), (-1, 2), (4, -3), (4, 2) }
-         */
-        float x11 = position.x - __size.x; 
-        float x12 = position.x + __size.x;
-        float y11 = position.y - __size.y;
-        float y12 = position.y + __size.y;
-
-        __size = new Vector2(_transform.rect.width / 2, _transform.rect.height / 2); // Bizim dikdörtgenimizin boyutunu hesaplama
-        float x21 = _transform.position.x - __size.x;
-        float x22 = _transform.position.x + __size.x;
-        float y21 = _transform.position.y - __size.y;
-        float y22 = _transform.position.y + __size.y;
-
-        static bool CheckPoint(float px, float py, float x1, float x2, float y1, float y2) // Girilen (px, py) noktasýnýn { (x1, y1), (x1, y2), (x2, y1), (x2, y2) } dikdörtgeninin içinde olup olmadýðýný kontrol ediyor
-        {
-            return !(px < x1 | px > x2 | py < y1 | py > y2);
+        } else {
+            if (hovering.go != null && hovering.go != target) {
+                hovering.target.callee.OnHoverExit(this);
+                hovering = (null, null);
+            } else if (hovering.go == target) {
+                hovering.target.callee.OnHoverStay(this);
+            } else {
+                drop.callee.OnHoverEnter(this);
+                hovering = (target, drop);
+            }
         }
 
-        if (size.x * size.y > _transform.rect.width * _transform.rect.height) // hangi dikdörtgenin daha büyük olduðunu hesaplar
-        {
-            return CheckPoint(x21, y21, x11, x12, y11, y12) |
-                CheckPoint(x22, y21, x11, x12, y11, y12) |
-                CheckPoint(x21, y22, x11, x12, y11, y12) |
-                CheckPoint(x22, y22, x11, x12, y11, y12);
-        }
-        return CheckPoint(x11, y11, x21, x22, y21, y22) |
-            CheckPoint(x12, y11, x21, x22, y21, y22) |
-            CheckPoint(x11, y12, x21, x22, y21, y22) |
-            CheckPoint(x12, y12, x21, x22, y21, y22);
+        rectTransform.position = Input.mousePosition;
     }
+
+    public void OnDrop(DropTarget target) {
+        if (hovering.go != null) {
+            hovering.target.callee.OnHoverExit(this);
+        }
+
+        lastOwner?.callee.OnElementDragEnd(this, target);
+        dragging = false;
+
+        if (target == null) {
+            onDropCancel();
+        } else {
+            var oldStart = startPos;
+            var oldTarget = targetPos;
+            var oldRectPos = rectTransform.position;
+
+            try {
+                startPos = Input.mousePosition;
+                targetPos = Input.mousePosition;
+                rectTransform.position = Input.mousePosition;
+
+                target.callee.OnDrop(this);
+                lastOwner = target;
+            } catch (DragableRejected) {
+                startPos = oldStart;
+                targetPos = oldTarget;
+                rectTransform.position = oldRectPos;
+
+                onDropCancel();
+            }
+        }
+
+        hovering = (null, null);
+    }
+
+    public void onDropCancel() {
+        dragging = false;
+
+        if (freeDragable) {
+            rectTransform.position = Input.mousePosition;
+            targetPos = Input.mousePosition;
+            startPos = Input.mousePosition;
+            lastOwner = null;
+        } else {
+            targetPos = startPos;
+        }
+
+        lastOwner?.callee.OnElementDragCancel(this);
+        hovering.target?.callee.OnDropCancel(this);
+    }
+
+    public void SetTargetPos(Vector3 pos) {
+        targetPos = pos;
+    }
+}
+
+[System.Serializable]
+public class DragableRejected : System.Exception {
+    public DragableRejected() { }
+    public DragableRejected(string message) : base(message) { }
+    public DragableRejected(string message, System.Exception inner) : base(message, inner) { }
+    protected DragableRejected(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
