@@ -9,12 +9,24 @@ public class AnimatedObject : MonoBehaviour
 
     System.Action After;
 
+    bool mustBeClosed = false;
+
+    void OnEnable() {
+        if(!mustBeClosed) return;
+        Debug.Log("Daha önceden kapatılamayan obje tespit edildi! Kapatılıyor...");
+        mustBeClosed = false;
+        gameObject.SetActive(false);
+    }
+
     void Awake() {
         animator = GetComponent<Animator>();
     }
 
     void _pop(bool state, string outAnim, string entryAnim) {
-        if(!state && !gameObject.activeInHierarchy) {
+        if(!state) mustBeClosed = true;
+
+        if(!state && (!gameObject.activeInHierarchy || !gameObject.activeSelf)) {
+            mustBeClosed = false;
             gameObject.SetActive(false);
             Debug.Log($"{gameObject.name} adlı animasyonlu obje zor kullanılarak kapatıldı");
             return;
@@ -33,8 +45,9 @@ public class AnimatedObject : MonoBehaviour
 
         if(!state) {
             if(animator == null || animator.runtimeAnimatorController == null) {
-                gameObject.SetActive(false);
                 hasPendingAnim = false;
+                mustBeClosed = false;
+                gameObject.SetActive(false);
                 return;
             }
 
@@ -42,7 +55,7 @@ public class AnimatedObject : MonoBehaviour
             animator.Play(outAnim);
         } else {
             gameObject.SetActive(true);
-
+            
             if(animator == null) {
                 animator = GetComponent<Animator>();
             }
@@ -70,6 +83,7 @@ public class AnimatedObject : MonoBehaviour
 
     void closeObject() {
         hasPendingAnim = false;
+        mustBeClosed = false;
         StoryManager.pendingAnims--;
         gameObject.SetActive(false);
 
@@ -79,7 +93,7 @@ public class AnimatedObject : MonoBehaviour
         }
     }
 
-    void disableObject() { gameObject.SetActive(false); }
+    void disableObject() { mustBeClosed = false; gameObject.SetActive(false); }
 
     void closeAnimation() {
         hasPendingAnim = false;
