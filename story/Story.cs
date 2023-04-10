@@ -65,9 +65,16 @@ public struct StoryState {
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
 
-    bool canVisible() {
-        return nextStory == null;
+    bool visibilite;
+
+    [ShowIf("canVisibleForButton")]
+    [Button("Görünürlüğü aç/kapa")]
+    public void s() {
+        visibilite = !visibilite;
     }
+
+    bool canVisible() => nextStory == null || visibilite;
+    bool canVisibleForButton() => nextStory != null;
 }
 
 [System.Serializable]
