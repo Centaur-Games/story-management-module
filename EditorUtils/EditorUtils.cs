@@ -1,12 +1,15 @@
 using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.IO;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
+
 using UnityEngine;
 
 public class EditorUtils : MonoBehaviour
 {
+    #if UNITY_EDITOR
     [MenuItem("Centaur Games/Take ScreenShot")]
     public static void takeScreenshot() {
         Guid uid = System.Guid.NewGuid();
@@ -15,4 +18,5 @@ public class EditorUtils : MonoBehaviour
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
+    #endif
 }
