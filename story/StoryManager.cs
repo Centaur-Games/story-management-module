@@ -14,10 +14,6 @@ public class StoryManager : MonoBehaviour {
     void Awake() {
         pendingAnims = 0;
 
-        if (instance != null) {
-            throw new System.Exception("StoryManager is initialized for second time.");
-        }
-
         storyStack = new Stack<StoryState>();
         instance = this;
 
