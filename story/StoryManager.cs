@@ -80,7 +80,14 @@ public class StoryManager : MonoBehaviour {
         }
 
         storyStack.Push(c);
-        c.owner.onPush(c);
+
+        try {
+            c.owner.onPush(c);
+        } catch (System.Exception e) {
+            storyStack.Pop();
+            getCurrent().owner.onPush(getCurrent(), forced: true);
+            throw e;
+        }
     }
 
     public static void backStory(int cnt) {
@@ -96,20 +103,52 @@ public class StoryManager : MonoBehaviour {
             throw new System.Exception("animation pending.");
         }
 
+        Stack<StoryState> poppedStates = new();
         StoryState tmp;
 
-        if(storyStack.Count <= 1) return null;
-        if(!storyStack.TryPop(out tmp)) return null;
+        if (storyStack.Count < 2) return null;
+        if (!storyStack.TryPeek(out tmp)) return null;
 
         for (var i = 0; i < cnt; i++) {
-            tmp.owner.onPop(true);
-            if(!storyStack.TryPeek(out tmp)) {
+            try {
+                tmp.owner.onPop(true);
+            } catch (System.Exception e) {
+                revertPop(poppedStates);
+                throw e;
+            }
+
+            storyStack.Pop();
+            poppedStates.Push(tmp);
+
+            if (!storyStack.TryPeek(out tmp)) {
                 return tmp;
             }
-            tmp.owner.onPush(tmp, true);
+
+            try {
+                tmp.owner.onPush(tmp, true);
+            } catch (System.Exception e) {
+                revertPop(poppedStates);
+                throw e;
+            }
         }
 
         return cnt == 0 ? tmp : null;
+    }
+
+    static void revertPop(Stack<StoryState> poppedStates) { // last resort
+        StoryState tmp;
+        if (!poppedStates.TryPop(out tmp)) {
+            return;
+        }
+
+        while (true) {
+            tmp.owner.onPush(tmp);
+            if (!(poppedStates.TryPop(out tmp))) {
+                return;
+            }
+
+            tmp.owner.onPop();
+        }
     }
 
     public static StoryState getCurrent() {
