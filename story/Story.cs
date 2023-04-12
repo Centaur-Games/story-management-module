@@ -11,10 +11,17 @@ public struct BubbleVertAlignment {
 
 [System.Serializable]
 public struct DialogData {
+    [Title("Dialog Manager Properties")]
     public DialogManager d_mngr;
-    public BubbleManager b_mngr;
+    [ShowIf("@d_mngr != null")]
     public int index;
+
+    [Space(10)]
+    [Title("Bubble Manager Properties")]
+    public BubbleManager b_mngr;
+    [ShowIf("@b_mngr != null")]
     public Vector2 pos;
+    [ShowIf("@b_mngr != null")]
     public BubbleVertAlignment alignment;
 }
 
@@ -289,6 +296,8 @@ public class Story : MonoBehaviour {
     protected void openAndSetDialogs(StoryState state, bool forced=false) {
         foreach (var dialog in state.iActiveDialogs) {
             dialog.d_mngr.open(dialog.index);
+
+            if(dialog.b_mngr == null) continue;
 
             if (dialog.b_mngr.horizontal != dialog.alignment.hor) {
                 Debug.Log($"hor set to {dialog.alignment.hor} from {dialog.b_mngr.horizontal}");
