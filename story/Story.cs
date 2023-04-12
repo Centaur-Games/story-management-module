@@ -114,6 +114,7 @@ public class Story : MonoBehaviour {
         get {
             var tmp = states[0];
             tmp.owner = this;
+            tmp.stateCounter = 0;
             return tmp;
         }
     }
