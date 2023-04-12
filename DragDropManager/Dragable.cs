@@ -6,7 +6,7 @@ public class Dragable : MonoBehaviour {
     [SerializeField] bool freeDragable = false;
     [SerializeField] float returnSpeed = 1;
 
-    public bool active = true;
+    [SerializeField] public bool active = true;
 
     Vector3 startPos;
     Vector3 targetPos;
@@ -109,6 +109,11 @@ public class Dragable : MonoBehaviour {
 
     public void SetTargetPos(Vector3 pos) {
         targetPos = pos;
+    }
+
+    public void SetActivation(bool active)
+    {
+        this.active = active;
     }
 }
 
