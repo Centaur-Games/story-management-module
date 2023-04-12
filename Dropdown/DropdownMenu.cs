@@ -60,7 +60,6 @@ public class DropdownMenu : MonoBehaviour
 
             int y = x;
 
-            
             __itemButton.onClick.AddListener(() => {
                 if(isLocked) throw new System.Exception("Bu öğe kilitli");
 
