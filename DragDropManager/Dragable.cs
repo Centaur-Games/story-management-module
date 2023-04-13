@@ -13,15 +13,19 @@ public class Dragable : MonoBehaviour {
     DropTarget lastOwner;
     bool dragging;
 
+    public bool draggingNow {
+        get => dragging;
+    }
+
     (GameObject go, DropTarget target) hovering = (null, null);
 
-    void Start() {
+    protected virtual void Start() {
         rectTransform = GetComponent<RectTransform>();
         startPos = rectTransform.anchoredPosition;
         targetPos = rectTransform.anchoredPosition;
     }
 
-    void Update() {
+    protected virtual void Update() {
         if (!dragging) {
             rectTransform.anchoredPosition = Vector3.Lerp(
                 rectTransform.anchoredPosition,
@@ -31,7 +35,7 @@ public class Dragable : MonoBehaviour {
         }
     }
 
-    public void OnDrag(GameObject target, DropTarget drop) {
+    public virtual void OnDrag(GameObject target, DropTarget drop) {
         if (!dragging) {
             lastOwner?.callee.OnElementDragStart(this);
             dragging = true;
@@ -57,7 +61,7 @@ public class Dragable : MonoBehaviour {
         transform.position = Input.mousePosition;
     }
 
-    public void OnDrop(DropTarget target) {
+    public virtual void OnDrop(DropTarget target) {
         if (hovering.go != null) {
             hovering.target.callee.OnHoverExit(this);
         }
@@ -91,7 +95,7 @@ public class Dragable : MonoBehaviour {
         hovering = (null, null);
     }
 
-    public void onDropCancel() {
+    public virtual void onDropCancel() {
         dragging = false;
 
         if (freeDragable) {
