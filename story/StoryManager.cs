@@ -9,10 +9,19 @@ public class StoryManager : MonoBehaviour {
     static Stack<StoryState> storyStack;
     public static StoryManager instance;
 
-    public static int pendingAnims = 0;
+    public static List<GameObject> pendingAnims = new();
+
+    public static string getPendingAnims() {
+        string _out = "\n";
+        pendingAnims.ForEach((e) => {
+            _out += "  " + e.name;
+            _out += "\n";
+        });
+        return _out;
+    }
 
     void Awake() {
-        pendingAnims = 0;
+        pendingAnims.Clear();
 
         storyStack = new Stack<StoryState>();
         instance = this;
@@ -21,8 +30,8 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void resetHistory() {
-        if (pendingAnims > 0) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         var tmp = storyStack.Pop();
@@ -31,8 +40,8 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void resetStory() {
-        if (pendingAnims > 0) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         var curr = storyStack.Peek();
@@ -45,16 +54,16 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void pushNextState(bool ignorePendingAnims=false) {
-        if (pendingAnims > 0 && !ignorePendingAnims) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0 && !ignorePendingAnims) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         getCurrent().owner.switchToNextState(ignorePendingAnims);
     }
 
     public static void replaceStory(StoryState? storyState, bool ignorePendingAnims=false) {
-        if (pendingAnims > 0 && !ignorePendingAnims) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0 && !ignorePendingAnims) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         if (storyState == null) throw new System.Exception("push with null state");
@@ -67,8 +76,8 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void pushStory(StoryState? storyState, bool ignorePendingAnims=false) {
-        if (pendingAnims > 0 && !ignorePendingAnims) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0 && !ignorePendingAnims) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         if (storyState == null) throw new System.Exception("push with null state");
@@ -91,16 +100,16 @@ public class StoryManager : MonoBehaviour {
     }
 
     public static void backStory(int cnt) {
-        if (pendingAnims > 0) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         popStory(cnt);
     }
 
     public static StoryState? popStory(int cnt, bool ignorePendingAnims=false) {
-        if (pendingAnims > 0 && !ignorePendingAnims) {
-            throw new System.Exception("animation pending.");
+        if (pendingAnims.Count > 0 && !ignorePendingAnims) {
+            throw new System.Exception($"animation pending!\nObjects: {getPendingAnims()}");
         }
 
         Stack<StoryState> poppedStates = new();
