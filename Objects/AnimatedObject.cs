@@ -42,6 +42,7 @@ public class AnimatedObject : MonoBehaviour
         }
 
         hasPendingAnim = true;
+        if(StoryManager.pendingAnims.Contains(gameObject) && AnimPending)  throw new System.Exception($"Animation Pending while pop: {gameObject.name}");
 
         if(!state) {
             if(animator == null || animator.runtimeAnimatorController == null) {
@@ -51,7 +52,8 @@ public class AnimatedObject : MonoBehaviour
                 return;
             }
 
-            StoryManager.pendingAnims++;
+            if(AnimPending) StoryManager.pendingAnims.Add(gameObject);
+
             animator.Play(outAnim);
         } else {
             gameObject.SetActive(true);
@@ -61,7 +63,7 @@ public class AnimatedObject : MonoBehaviour
             }
 
             if(animator.runtimeAnimatorController != null) {
-                StoryManager.pendingAnims++;
+                if(AnimPending) StoryManager.pendingAnims.Add(gameObject);
                 animator.Play(entryAnim);
             }
         }
@@ -84,7 +86,10 @@ public class AnimatedObject : MonoBehaviour
     void closeObject() {
         hasPendingAnim = false;
         mustBeClosed = false;
-        StoryManager.pendingAnims--;
+
+        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while close: {gameObject.name}");
+        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
+
         gameObject.SetActive(false);
 
         if(After != null) {
@@ -97,12 +102,14 @@ public class AnimatedObject : MonoBehaviour
 
     void closeAnimation() {
         hasPendingAnim = false;
-        StoryManager.pendingAnims--;
+        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while close: {gameObject.name}");
+        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
     }
 
     void openObject() {
         hasPendingAnim = false;
-        StoryManager.pendingAnims--;
+        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while open: {gameObject.name}");
+        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
     }
 
     // [System.Obsolete("Bunun yerine go(Vector2) kullan")]
