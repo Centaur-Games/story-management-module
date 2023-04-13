@@ -38,8 +38,9 @@ public class DialogManager : MonoBehaviour {
 
     // daktilo şeklinde yazdırır
     IEnumerator start(int index) {
-        before.Invoke();
-        callSpecialEvents(index, dialogEventType.onStart);
+        if(!callSpecialEvents(index, dialogEventType.onStart)) {
+            before.Invoke();
+        }
 
         string replacedString = text[index].Replace("{name}", PlayerPrefs.HasKey("name") ? PlayerPrefs.GetString("name") : "İsimsiz");
 
@@ -52,8 +53,9 @@ public class DialogManager : MonoBehaviour {
             field.text = newText;
         }
 
-        callSpecialEvents(index, dialogEventType.onFinish);
-        after.Invoke();
+        if(!callSpecialEvents(index, dialogEventType.onFinish)) {
+            after.Invoke();
+        }
     }
 
     public void open(int index) {
@@ -63,17 +65,23 @@ public class DialogManager : MonoBehaviour {
         StartCoroutine(currentCoroutine);
     }
 
-    void callSpecialEvents(int textIndex, dialogEventType type) {
+    bool callSpecialEvents(int textIndex, dialogEventType type) {
+        bool returner = false;
         foreach(var e in specialEvents) {
             if(e.textIndex != textIndex || e.type != type) continue;
             e.events.Invoke();
+
+            if(e.overrided) returner = true;
         }
+
+        return returner;
     }
 }
 
 [Serializable]
 public class SpecialEvent {
     public int textIndex;
+    public bool overrided = false;
     public dialogEventType type;
     public UnityEvent events;
 }
