@@ -13,11 +13,12 @@ public class NameUtil : MonoBehaviour {
         foreach(var button in buttons) {
             button.interactable = val.Length > 2;
         }
+        if(val.Length < 3) return;
         PlayerPrefs.SetString("name", val);
         PlayerPrefs.Save();
     }
 
-    void Start() {
+    void OnEnable() {
         if (act != null) {
             throw new System.Exception("act is not null while called on start");
         }
@@ -32,6 +33,7 @@ public class NameUtil : MonoBehaviour {
 
         foreach(var button in buttons) {
             button.interactable = false;
+            Debug.Log("Kapatıldı");
         }
 
         act = (string val) => {
@@ -39,9 +41,11 @@ public class NameUtil : MonoBehaviour {
         };
 
         input.onValueChanged.AddListener(act);
+
+        _act(input.text);
     }
 
-    void OnDestroy() {
+    void OnDisable() {
         input.onValueChanged.RemoveListener(act);
         act = null;
     }
