@@ -17,15 +17,15 @@ public class Dragable : MonoBehaviour {
 
     void Start() {
         rectTransform = GetComponent<RectTransform>();
-        startPos = rectTransform.position;
-        targetPos = rectTransform.position;
+        startPos = rectTransform.anchoredPosition;
+        targetPos = rectTransform.anchoredPosition;
     }
 
     void Update() {
         if (!dragging) {
-            rectTransform.position = Vector3.Lerp(
-                rectTransform.position,
-                new Vector3((Screen.width/1920f) * targetPos.x, (Screen.height/1080f) * targetPos.y, 1),
+            rectTransform.anchoredPosition = Vector3.Lerp(
+                rectTransform.anchoredPosition,
+                targetPos,
                 1-Mathf.Exp(-returnSpeed * Time.deltaTime)
             );
         }
@@ -54,7 +54,7 @@ public class Dragable : MonoBehaviour {
             }
         }
 
-        rectTransform.position = Input.mousePosition;
+        transform.position = Input.mousePosition;
     }
 
     public void OnDrop(DropTarget target) {
