@@ -20,7 +20,7 @@ public class StoryManager : MonoBehaviour {
         return _out;
     }
 
-    void Awake() {
+    void Start() {
         pendingAnims.Clear();
 
         storyStack = new Stack<StoryState>();
