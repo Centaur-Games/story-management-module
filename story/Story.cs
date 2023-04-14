@@ -148,6 +148,7 @@ public class Story : MonoBehaviour {
             state?.listeners.onPush.Invoke(state);
         }
 
+        Debug.Log($"Story {state} pushed on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}");
         currState = state ?? defaultState;
     }
 
@@ -176,6 +177,7 @@ public class Story : MonoBehaviour {
             currState?.listeners.onPop.Invoke(currState);
         }
 
+        Debug.Log($"Story {currState} popped on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}");
         currState = null;
     }
 
@@ -189,7 +191,7 @@ public class Story : MonoBehaviour {
         }
 
         if (currState == null) {
-            throw new System.Exception("not pushed");
+            throw new System.Exception($"{gameObject.name} not pushed");
         }
 
         StoryState c = (StoryState)currState;
