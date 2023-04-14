@@ -32,7 +32,7 @@ public class DropdownMenu : MonoBehaviour
     public UnityEvent OnDropdownChoosed;
 
     public bool correct {
-        get => correctAnswer == _items[_choosen];
+        get => (_choosen == -1 ? false : correctAnswer == _items[_choosen]);
     }
 
     private void Start() {
