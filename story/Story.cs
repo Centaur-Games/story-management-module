@@ -142,11 +142,10 @@ public class Story : MonoBehaviour {
         openAndSetDialogs(state ?? defaultState, forced);
         setBackgroundImage(state ?? defaultState);
 
-
         if (forced) {
-            currState?.listeners.onForcedPush.Invoke(currState);
+            state?.listeners.onForcedPush.Invoke(state);
         } else {
-            currState?.listeners.onPush.Invoke(currState);
+            state?.listeners.onPush.Invoke(state);
         }
 
         currState = state ?? defaultState;
