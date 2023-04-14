@@ -31,6 +31,10 @@ public class DropdownMenu : MonoBehaviour
 
     public UnityEvent OnDropdownChoosed;
 
+    public bool correct {
+        get => correctAnswer == _items[_choosen];
+    }
+
     private void Start() {
         _rectTransform = GetComponent<RectTransform>();
 
