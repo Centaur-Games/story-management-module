@@ -148,7 +148,10 @@ public class Story : MonoBehaviour {
             state?.listeners.onPush.Invoke(state);
         }
 
-        Debug.Log($"Story {state} pushed on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}");
+        Debug.Log(
+            $"Story {state} {(forced ? "back" : "forward")} pushed on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}"
+        );
+
         currState = state ?? defaultState;
     }
 
@@ -177,7 +180,10 @@ public class Story : MonoBehaviour {
             currState?.listeners.onPop.Invoke(currState);
         }
 
-        Debug.Log($"Story {currState} popped on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}");
+        Debug.Log(
+            $"Story {currState} {(closeForced ? "back" : "forward")} popped on {gameObject.name}\n{new System.Diagnostics.StackTrace()}"
+        );
+
         currState = null;
     }
 
