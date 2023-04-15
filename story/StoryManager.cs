@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class StoryManager : MonoBehaviour {
     [SerializeField] Story initialStory;
+    public static StoryState? initialState;
 
     static Stack<StoryState> storyStack;
     public static StoryManager instance;
@@ -13,10 +14,12 @@ public class StoryManager : MonoBehaviour {
 
     public static string getPendingAnims() {
         string _out = "\n";
+
         pendingAnims.ForEach((e) => {
             _out += "  " + e.name;
             _out += "\n";
         });
+
         return _out;
     }
 
@@ -26,7 +29,11 @@ public class StoryManager : MonoBehaviour {
         storyStack = new Stack<StoryState>();
         instance = this;
 
-        pushStory(initialStory.defaultState);
+        if (initialState != null) {
+            pushStory(initialState);
+        } else {
+            pushStory(initialStory.defaultState);
+        }
     }
 
     public static void resetHistory() {
