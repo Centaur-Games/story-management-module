@@ -15,6 +15,8 @@ public class DialogManager : MonoBehaviour {
     [SerializeField] UnityEvent after;
     TextMeshProUGUI field;
 
+    [SerializeField] List<specialCharacter> specialCharacters = new();
+
     [SerializeField] SpecialEvent[] specialEvents;
 
     // şu anda kullanılan coroutine'dir
@@ -43,19 +45,39 @@ public class DialogManager : MonoBehaviour {
         }
 
         string replacedString = text[index].Replace("{name}", PlayerPrefs.HasKey("name") ? PlayerPrefs.GetString("name") : "İsimsiz");
+        replacedString = EmojiEncoder(replacedString);
 
         char[] characters = replacedString.ToCharArray();
 
         string newText = "";
+
         foreach(var a in characters) {
             yield return new WaitForSecondsRealtime(multiple);
-            newText += a.ToString();
+
+            newText += EmojiDecoder(a);
             field.text = newText;
         }
 
         if(!callSpecialEvents(index, dialogEventType.onFinish)) {
             after.Invoke();
         }
+    }
+
+    string EmojiEncoder(string text) {
+        foreach(var e in specialCharacters) {
+            text = text.Replace(e.code, e.charCode.ToString());
+        }
+        return text;
+    }
+
+    string EmojiDecoder(char charCode) {
+        foreach(var e in specialCharacters) {
+            if(charCode == e.charCode) {
+                return e.code;
+            }
+        }
+
+        return charCode.ToString();
     }
 
     public void open(int index) {
@@ -84,6 +106,12 @@ public class SpecialEvent {
     public bool overrided = false;
     public dialogEventType type;
     public UnityEvent events;
+}
+
+[Serializable]
+public class specialCharacter {
+    public char charCode;
+    public string code; 
 }
 
 public enum dialogEventType {
