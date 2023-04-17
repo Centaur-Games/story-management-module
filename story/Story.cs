@@ -136,6 +136,10 @@ public class Story : MonoBehaviour {
     /// </summary>
     /// <param name="state">StoryManager tarafından gönderilen state</param>
     public virtual void onPush(StoryState? state, bool forced=false) {
+        Debug.Log(
+            $"Story {state} {state?.owner?.gameObject.name} {state?.stateCounter} {(forced ? "back" : "forward")} push started on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}"
+        );
+
         openForcedActives(state ?? defaultState, forced);
         closeForceCloseds(state ?? defaultState, forced);
         openActives(state ?? defaultState, forced);
@@ -149,7 +153,7 @@ public class Story : MonoBehaviour {
         }
 
         Debug.Log(
-            $"Story {state} {(forced ? "back" : "forward")} pushed on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}"
+            $"Story {state} {state?.stateCounter} {(forced ? "back" : "forward")} pushed on {gameObject.name} stack:\n {new System.Diagnostics.StackTrace()}"
         );
 
         currState = state ?? defaultState;
@@ -170,8 +174,8 @@ public class Story : MonoBehaviour {
         closeDialogs((StoryState)currState, closeForced);
 
         if (closeForced) {
-            closeForcedActives((StoryState)currState, true);
-            openForceCloseds((StoryState)currState, true);
+            closeForcedActives((StoryState)currState);
+            openForceCloseds((StoryState)currState);
         }
 
         if (closeForced) {
@@ -266,27 +270,15 @@ public class Story : MonoBehaviour {
         }
     }
 
-    protected void closeForcedActives(StoryState state, bool forced=false) {
-        if (forced) {
-            foreach(var obj in state.iForcedActiveObjects) {
-                obj.SetActivePop(false);
-            }
-        } else {
-            foreach(var obj in state.iForcedActiveObjects) {
-                obj.SetActive(false);
-            }
+    protected void closeForcedActives(StoryState state) {
+        foreach(var obj in state.iForcedActiveObjects) {
+            obj.SetActivePop(false);
         }
     }
 
-    protected void openForceCloseds(StoryState state, bool forced=true) {
-        if (forced) {
-            foreach(var obj in state.iForcedClosedObjects) {
-                obj.SetActivePop(true);
-            }
-        } else {
-            foreach(var obj in state.iForcedClosedObjects) {
-                obj.SetActive(true);
-            }
+    protected void openForceCloseds(StoryState state) {
+        foreach(var obj in state.iForcedClosedObjects) {
+            obj.SetActive(true);
         }
     }
 
