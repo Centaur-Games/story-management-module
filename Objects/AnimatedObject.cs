@@ -1,11 +1,36 @@
 using UnityEngine;
 
+struct LastOp {
+    public bool state;
+    public string outAnim;
+    public string entryAnim;
+
+    public override bool Equals(object obj) => base.Equals(obj);
+    public override int GetHashCode() => base.GetHashCode();
+    public override string ToString() => base.ToString();
+
+    public static bool operator ==(LastOp? obj1, LastOp? obj2) {
+        if (!obj1.HasValue && !obj2.HasValue) return true;
+        if (!obj1.HasValue || !obj1.HasValue) return false;
+
+        if (obj1?.state != obj2?.state) return false;
+        if (obj1?.outAnim != obj2?.outAnim) return false;
+        if (obj1?.entryAnim != obj2?.entryAnim) return false;
+
+        return true;
+    }
+
+    public static bool operator !=(LastOp? obj1, LastOp? obj2) =>
+        !(obj1 == obj2);
+}
+
 [RequireComponent(typeof(Animator))]
 public class AnimatedObject : MonoBehaviour
 {
     [SerializeField] bool AnimPending = true;
-    bool hasPendingAnim = false;
     Animator animator;
+
+    LastOp? lastOp = null;
 
     System.Action After;
 
@@ -13,9 +38,19 @@ public class AnimatedObject : MonoBehaviour
 
     void OnEnable() {
         if(!mustBeClosed) return;
-        Debug.Log("Daha önceden kapatılamayan obje tespit edildi! Kapatılıyor...");
+
+        Debug.Log(
+            "Daha önceden kapatılamayan obje tespit edildi! Kapatılıyor..."
+        );
+
         mustBeClosed = false;
         gameObject.SetActive(false);
+    }
+
+    void OnDisable() {
+        if (StoryManager.pendingAnims.Contains(gameObject)) {
+            StoryManager.pendingAnims.Remove(gameObject);
+        }
     }
 
     void Awake() {
@@ -23,48 +58,67 @@ public class AnimatedObject : MonoBehaviour
     }
 
     void _pop(bool state, string outAnim, string entryAnim) {
-        if(!state) mustBeClosed = true;
+        Debug.LogWarning($"_pop:: obj: {gameObject.name}, target: {state}, {outAnim}, {entryAnim}\n{new System.Diagnostics.StackTrace()}");
 
-        if(!state && (!gameObject.activeInHierarchy || !gameObject.activeSelf)) {
-            mustBeClosed = false;
-            gameObject.SetActive(false);
-            Debug.Log($"{gameObject.name} adlı animasyonlu obje zor kullanılarak kapatıldı");
-            return;
-        }
-
-        if (hasPendingAnim && AnimPending) {
-            throw new System.Exception($"{gameObject.name} anim pending");
-        }
-
-        if(state == gameObject.activeInHierarchy){
+        if (state == gameObject.activeSelf) {
             Debug.Log($"{gameObject.name} objesi zaten {(state ? "açık" : "kapalı")}.");
             return;
         }
 
-        hasPendingAnim = true;
-        if(StoryManager.pendingAnims.Contains(gameObject) && AnimPending)  throw new System.Exception($"Animation Pending while pop: {gameObject.name}");
+        LastOp currOp = new LastOp {
+            state=state,
+            outAnim=outAnim,
+            entryAnim=entryAnim
+        };
 
-        if(!state) {
-            if(animator == null || animator.runtimeAnimatorController == null) {
-                hasPendingAnim = false;
-                mustBeClosed = false;
-                gameObject.SetActive(false);
+        if (StoryManager.pendingAnims.Contains(gameObject) && AnimPending) {
+            if (currOp == lastOp) {
                 return;
             }
 
-            if(AnimPending) StoryManager.pendingAnims.Add(gameObject);
+            throw new AnimationPendingException(
+                $"Global Animation Pending while switching: {gameObject.name}, targetState: {state}"
+            );
+        }
+
+        lastOp = currOp;
+
+        if (AnimPending) {
+            StoryManager.pendingAnims.Add(gameObject);
+        }
+
+        if (!state) {
+            mustBeClosed = true;
+
+            if (!gameObject.activeInHierarchy ||
+                !gameObject.activeSelf ||
+                animator == null ||
+                animator.runtimeAnimatorController == null
+            ) {
+                if (AnimPending) {
+                    StoryManager.pendingAnims.Remove(gameObject);
+                }
+
+                mustBeClosed = false;
+                gameObject.SetActive(false);
+
+                Debug.Log(
+                    $"{gameObject.name} adlı animasyonlu obje aktif degilken kapatildi ya da animatoru yok"
+                );
+
+                return;
+            }
 
             animator.Play(outAnim);
         } else {
             gameObject.SetActive(true);
-            
-            if(animator == null) {
-                animator = GetComponent<Animator>();
-            }
 
-            if(animator.runtimeAnimatorController != null) {
-                if(AnimPending) StoryManager.pendingAnims.Add(gameObject);
+            if (animator?.runtimeAnimatorController != null) {
                 animator.Play(entryAnim);
+            } else {
+                if (AnimPending) {
+                    StoryManager.pendingAnims.Remove(gameObject);
+                }
             }
         }
     }
@@ -84,11 +138,8 @@ public class AnimatedObject : MonoBehaviour
     }
 
     void closeObject() {
-        hasPendingAnim = false;
         mustBeClosed = false;
-
-        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while close: {gameObject.name}");
-        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
+        cleansePendingAnim();
 
         gameObject.SetActive(false);
 
@@ -100,19 +151,23 @@ public class AnimatedObject : MonoBehaviour
 
     void disableObject() { mustBeClosed = false; gameObject.SetActive(false); }
 
-    void closeAnimation() {
-        hasPendingAnim = false;
-        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while close: {gameObject.name}");
-        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
+    void closeAnimation() => cleansePendingAnim();
+    void openObject() => cleansePendingAnim();
+
+    void cleansePendingAnim() {
+        lastOp = null;
+        if (!AnimPending) return;
+
+        if (!StoryManager.pendingAnims.Contains(gameObject)) {
+            throw new AnimationEndedAlreadyException(
+                $"AnimatedObject already removed from pendingAnims list: {gameObject.name}"
+            );
+        }
+
+        StoryManager.pendingAnims.Remove(gameObject);
     }
 
-    void openObject() {
-        hasPendingAnim = false;
-        if(!StoryManager.pendingAnims.Contains(gameObject) && AnimPending) throw new System.Exception($"Animation Pending while open: {gameObject.name}");
-        if(AnimPending) StoryManager.pendingAnims.Remove(gameObject);
-    }
-
-    // [System.Obsolete("Bunun yerine go(Vector2) kullan")]
+    [System.Obsolete("Bunun yerine go(Vector2) kullan")]
     public void go(string vector) {
         var x = vector.Split("|");
         go(new Vector2(float.Parse(x[0]), float.Parse(x[1])));
@@ -151,4 +206,26 @@ public class AnimatedObject : MonoBehaviour
             animating = false;
         }
     }
+}
+
+[System.Serializable]
+public class AnimationPendingException : System.Exception
+{
+    public AnimationPendingException() { }
+    public AnimationPendingException(string message) : base(message) { }
+    public AnimationPendingException(string message, System.Exception inner) : base(message, inner) { }
+    protected AnimationPendingException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
+[System.Serializable]
+public class AnimationEndedAlreadyException : System.Exception
+{
+    public AnimationEndedAlreadyException() { }
+    public AnimationEndedAlreadyException(string message) : base(message) { }
+    public AnimationEndedAlreadyException(string message, System.Exception inner) : base(message, inner) { }
+    protected AnimationEndedAlreadyException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
