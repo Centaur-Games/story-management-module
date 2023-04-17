@@ -22,6 +22,8 @@ public class DialogManager : MonoBehaviour {
     // şu anda kullanılan coroutine'dir
     public IEnumerator currentCoroutine;
 
+    int index = 0;
+
     // aktif olduğunda çalışır
     void OnEnable() {
         if(field == null) {
@@ -33,7 +35,7 @@ public class DialogManager : MonoBehaviour {
         if(!runOnStart) return;
 
         if(currentCoroutine != null) StopCoroutine(currentCoroutine);
-        currentCoroutine = start(0);
+        currentCoroutine = start(index);
 
         StartCoroutine(currentCoroutine);
     }
@@ -81,6 +83,11 @@ public class DialogManager : MonoBehaviour {
     }
 
     public void open(int index) {
+        if (!isActiveAndEnabled) {
+            this.index = index;
+            return;
+        }
+
         if(currentCoroutine != null) StopCoroutine(currentCoroutine);
         currentCoroutine = start(index);
 
