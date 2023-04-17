@@ -23,9 +23,11 @@ public class StoryManager : MonoBehaviour {
         return _out;
     }
 
-    void Start() {
+    void Awake() {
         pendingAnims.Clear();
+    }
 
+    void Start() {
         storyStack = new Stack<StoryState>();
         instance = this;
 
