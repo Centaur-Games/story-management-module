@@ -77,9 +77,8 @@ public class Dragable : MonoBehaviour {
             var oldRectPos = rectTransform.position;
 
             try {
-                startPos = Input.mousePosition;
-                targetPos = Input.mousePosition;
-                rectTransform.position = Input.mousePosition;
+                startPos = rectTransform.anchoredPosition;
+                targetPos = rectTransform.anchoredPosition;
 
                 target.callee.OnDrop(this);
                 lastOwner = target;
@@ -99,9 +98,8 @@ public class Dragable : MonoBehaviour {
         dragging = false;
 
         if (freeDragable) {
-            rectTransform.position = Input.mousePosition;
-            targetPos = Input.mousePosition;
-            startPos = Input.mousePosition;
+            targetPos = rectTransform.anchoredPosition;
+            startPos = rectTransform.anchoredPosition;
             lastOwner = null;
         } else {
             targetPos = startPos;
