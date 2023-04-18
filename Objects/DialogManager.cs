@@ -23,6 +23,8 @@ public class DialogManager : MonoBehaviour {
     public IEnumerator currentCoroutine;
 
     int index = 0;
+    bool routineStarted = false;
+    bool beforeInvoked = false;
 
     // aktif olduğunda çalışır
     void OnEnable() {
@@ -40,11 +42,30 @@ public class DialogManager : MonoBehaviour {
         StartCoroutine(currentCoroutine);
     }
 
+    void OnDisable() {
+        if (!routineStarted) return;
+
+        if (!beforeInvoked) {
+            if (!callSpecialEvents(index, dialogEventType.onStart)) {
+                before.Invoke();
+            }
+        }
+
+        if (!callSpecialEvents(index, dialogEventType.onFinish)) {
+            after.Invoke();
+        }
+    }
+
     // daktilo şeklinde yazdırır
     IEnumerator start(int index) {
+        routineStarted = true;
+        beforeInvoked = false;
+
         if(!callSpecialEvents(index, dialogEventType.onStart)) {
             before.Invoke();
         }
+
+        beforeInvoked = true;
 
         string replacedString = text[index].Replace("{name}", PlayerPrefs.HasKey("name") ? PlayerPrefs.GetString("name") : "İsimsiz");
         replacedString = EmojiEncoder(replacedString);
@@ -63,6 +84,8 @@ public class DialogManager : MonoBehaviour {
         if(!callSpecialEvents(index, dialogEventType.onFinish)) {
             after.Invoke();
         }
+
+        routineStarted = false;
     }
 
     string EmojiEncoder(string text) {
@@ -110,7 +133,7 @@ public class DialogManager : MonoBehaviour {
 [Serializable]
 public class SpecialEvent {
     public int textIndex;
-    public bool overrided = false;
+    public bool overrided = false; // should call after events or not.
     public dialogEventType type;
     public UnityEvent events;
 }
