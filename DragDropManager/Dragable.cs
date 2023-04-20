@@ -113,6 +113,15 @@ public class Dragable : MonoBehaviour {
         targetPos = pos;
     }
 
+    public void SetWorldSpaceTargetPos(Vector3 pos) {
+        var oldPos = transform.position;
+
+        transform.position = pos;
+        targetPos = rectTransform.anchoredPosition;
+
+        transform.position = oldPos;
+    }
+
     public void SetActivation(bool active)
     {
         this.active = active;
