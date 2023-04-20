@@ -5,9 +5,16 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DropdownMenu : MonoBehaviour
+public class DropdownMenu : MonoBehaviour, IInputValidateable
 {
     bool isLocked = false;
+    public bool locked { get => isLocked; set {
+        if (value) {
+            Lock();
+        } else {
+            UnLock();
+        }
+    }}
 
     [SerializeField] public string correctAnswer;
     [SerializeField] private DropdownSettings _datas;
