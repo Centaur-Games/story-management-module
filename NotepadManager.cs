@@ -110,15 +110,16 @@ public class NotepadManager : MonoBehaviour {
             if (child.activeInHierarchy && child.activeSelf) {
                 var validateable = child.GetComponent<IInputValidateable>();
 
-                Debug.Log(child);
                 if (validateable != null) {
                     if (!validateable.correct && !validateable.locked) {
                         autoControlWrongCallbacks.Invoke();
                         throw new System.Exception("wrong ans");
                     }
 
-                    compDone |= true;
-                    validateable.locked = true;
+                    if (!validateable.locked) {
+                        compDone |= true;
+                        validateable.locked = true;
+                    }
                 }
 
                 doAutoCheck(child.transform, ref depth, ref compDone);
