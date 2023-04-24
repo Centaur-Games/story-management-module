@@ -66,7 +66,10 @@ public class NotebookFillDropTarget : MonoBehaviour, IDropTargetListener, IInput
     }
 
     public void OnElementDragCancel(Dragable dragable) {
+        lastDropped = dragable.GetComponent<NotebookFillDragable>();
         lastDropped.SetColor(neutralColor);
+
+        dragable.SetWorldSpaceTargetPos(transform.position);
     }
 
     public void OnDropCancel(Dragable dragable) {}
