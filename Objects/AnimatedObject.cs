@@ -178,6 +178,17 @@ public class AnimatedObject : MonoBehaviour
         animating = true;
     }
 
+    public void goWorldSpace(Vector2 vector) {
+        var oldPos = transform.position;
+
+        transform.position = vector;
+        targetPos = rectTransform.anchoredPosition;
+
+        transform.position = oldPos;
+
+        animating = true;
+    }
+
     bool animating = false;
     Vector2 targetPos;
     RectTransform rectTransform;
