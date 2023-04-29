@@ -113,6 +113,10 @@ public class Dragable : MonoBehaviour {
         targetPos = pos;
     }
 
+    public void SetStartPos(Vector3 pos) {
+        startPos = pos;
+    }
+
     public void SetWorldSpaceTargetPos(Vector3 pos) {
         var oldPos = transform.position;
 
@@ -121,6 +125,16 @@ public class Dragable : MonoBehaviour {
 
         transform.position = oldPos;
     }
+
+    public void SetWorldSpaceStartPos(Vector3 pos) {
+        var oldPos = transform.position;
+
+        transform.position = pos;
+        startPos = rectTransform.anchoredPosition;
+
+        transform.position = oldPos;
+    }
+
 
     public void SetActivation(bool active)
     {
