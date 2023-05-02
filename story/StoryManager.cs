@@ -102,6 +102,8 @@ public class StoryManager : MonoBehaviour {
         } catch (System.Exception e) {
             storyStack.Pop();
             getCurrent().owner.onPush(getCurrent(), forced: true);
+
+            Debug.LogError(e.StackTrace);
             throw e;
         }
     }
@@ -130,6 +132,8 @@ public class StoryManager : MonoBehaviour {
                 tmp.owner.onPop(true);
             } catch (System.Exception e) {
                 revertPop(poppedStates);
+
+                Debug.LogError(e.StackTrace);
                 throw e;
             }
 
@@ -144,6 +148,8 @@ public class StoryManager : MonoBehaviour {
                 tmp.owner.onPush(tmp, true);
             } catch (System.Exception e) {
                 revertPop(poppedStates);
+
+                Debug.LogError(e.StackTrace);
                 throw e;
             }
         }
