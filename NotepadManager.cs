@@ -193,6 +193,7 @@ public class NotepadManager : MonoBehaviour {
 
     void unLockLastPageCheckables() {
         (bool open, GameObject obj)? lastobj = null;
+        int itemCount=0;
 
         foreach (var child in matchPage(maxPage)) {
             if (!child.open && (lastobj?.open ?? false)) {
@@ -200,10 +201,11 @@ public class NotepadManager : MonoBehaviour {
             }
 
             lastobj = child;
+            itemCount++;
         }
 
         if (lastobj != null) {
-            openLastNthCheckable(lastobj.Value, 1);
+            openLastNthCheckable(lastobj.Value, itemCount);
         }
     }
 
