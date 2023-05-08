@@ -94,15 +94,19 @@ public class NotepadManager : MonoBehaviour {
 
     public void nextPage() {
         if (currPage >= maxPage) return;
-        switchPage(currPage+1);
+        switchPage(currPage+1, true);
     }
 
     public void prevPage() {
         if (currPage <= 0) return;
-        switchPage(currPage-1);
+        switchPage(currPage-1, true);
     }
 
     public void switchPage(int pageIndex) {
+        switchPage(pageIndex, false);
+    }
+
+    public void switchPage(int pageIndex, bool user) {
         if (pageIndex > pageCount || pageIndex < -1) {
             throw new System.Exception("page index exceeds page count");
         }
@@ -112,7 +116,7 @@ public class NotepadManager : MonoBehaviour {
         }
 
         currPage = pageIndex == -1 ? transform.childCount-1 : pageIndex;
-        ReloadPage();
+        ReloadPage(user);
     }
 
     public void closeAllChildren() {
@@ -133,7 +137,7 @@ public class NotepadManager : MonoBehaviour {
         }
     }
 
-    public void ReloadPage() {
+    public void ReloadPage(bool user=false) {
         closeAllChildren();
         lockAllCheckables();
 
@@ -142,7 +146,9 @@ public class NotepadManager : MonoBehaviour {
             element.obj.SetActive(element.open);
         }
 
-        unLockLastPageCheckables();
+        if (!user) {
+            unLockCurrPageCheckables();
+        }
 
         transform.GetChild(currPage).gameObject.SetActive(true);
     }
@@ -191,11 +197,11 @@ public class NotepadManager : MonoBehaviour {
         lockAllCheckables(transform);
     }
 
-    void unLockLastPageCheckables() {
+    void unLockCurrPageCheckables() {
         (bool open, GameObject obj)? lastobj = null;
         int itemCount=0;
 
-        foreach (var child in matchPage(maxPage)) {
+        foreach (var child in matchPage(currPage)) {
             if (!child.open && (lastobj?.open ?? false)) {
                 break;
             }
