@@ -24,13 +24,17 @@ public class NotebookFillDropTarget : MonoBehaviour, IDropTargetListener, IInput
     }}
 
     public bool locked { get => lastDropped?.locked ?? false; set {
+        if (lastDropped == null) {
+            return;
+        }
+
         if (!value) {
             lastDropped.SetColor(neutralColor);
         } else {
             lastDropped.SetColor(correct ? correctColor : wrongColor);
         }
 
-        lastDropped!.locked = value;
+        lastDropped.locked = value;
     }}
 
     NotebookFillDragable lastDropped;
