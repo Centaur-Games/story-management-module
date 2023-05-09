@@ -13,6 +13,10 @@ public class Dragable : MonoBehaviour {
     DropTarget lastOwner;
     bool dragging;
 
+    public DropTarget owner {
+        get => lastOwner;
+    }
+
     public bool draggingNow {
         get => dragging;
     }
