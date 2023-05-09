@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
     public static bool galleryStateIsActive = false;
     public static GameManager instance;
 
+    [SerializeField] private Canvas _canvas;
     [SerializeField] private EventSystem _eventSystem;
     [SerializeField] private GraphicRaycaster _raycaster;
 
+    [HideInInspector] public static Canvas canvas => instance._canvas;
     [HideInInspector] public static EventSystem eventSystem => instance._eventSystem;
     [HideInInspector] public static GraphicRaycaster raycaster => instance._raycaster;
 
