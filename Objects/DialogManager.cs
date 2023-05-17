@@ -23,6 +23,7 @@ public class DialogManager : MonoBehaviour {
     public IEnumerator currentCoroutine;
 
     int index = 0;
+    int LastIndex = -1;
     bool routineStarted = false;
     bool beforeInvoked = false;
 
@@ -74,11 +75,15 @@ public class DialogManager : MonoBehaviour {
 
         string newText = "";
 
-        foreach(var a in characters) {
-            yield return new WaitForSecondsRealtime(multiple);
+        if(index != LastIndex) {
+            foreach(var a in characters) {
+                yield return new WaitForSecondsRealtime(multiple);
 
-            newText += EmojiDecoder(a);
-            field.text = newText;
+                newText += EmojiDecoder(a);
+                field.text = newText;
+            }
+        } else {
+            field.text = text[index];
         }
 
         if(!callSpecialEvents(index, dialogEventType.onFinish)) {
@@ -86,6 +91,7 @@ public class DialogManager : MonoBehaviour {
         }
 
         routineStarted = false;
+        LastIndex = index;
     }
 
     string EmojiEncoder(string text) {
