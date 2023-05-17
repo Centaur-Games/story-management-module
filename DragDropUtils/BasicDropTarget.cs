@@ -7,6 +7,14 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
     [SerializeField] UnityEvent onFail;
     [SerializeField] UnityEvent<Dragable> onHover;
 
+    public void setTargetDragable(Dragable dragable) {
+        targetDragable = dragable;
+    }
+
+    public void clearTargetDragable() {
+        targetDragable = null;
+    }
+
     void IDropTargetListener.OnDrop(Dragable dragable) {
         if (dragable == targetDragable) {
             onSuccess.Invoke();
