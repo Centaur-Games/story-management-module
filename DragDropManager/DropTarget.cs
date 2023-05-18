@@ -32,6 +32,11 @@ public class DropTarget : MonoBehaviour {
     [SerializeField] MonoBehaviour toBeCalled;
     public bool active;
 
+    public bool _active {
+        get => active;
+        set => active = value;
+    }
+
     void Start() {
         if (!(toBeCalled is IDropTargetListener)) {
             throw new System.Exception(
