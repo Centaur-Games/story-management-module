@@ -48,6 +48,10 @@ public class PourTarget : MonoBehaviour, IDropTargetListener {
         }
     }
 
+    public void resetFilledAmount() {
+        reserve.fillAmount = 0;
+    }
+
     void IDropTargetListener.OnElementDragCancel(Dragable dragable) {}
     void IDropTargetListener.OnElementDragEnd
         (Dragable dragable, DropTarget droppedTarget) {}
