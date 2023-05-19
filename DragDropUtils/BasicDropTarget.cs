@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
     [SerializeField] Dragable targetDragable;
+    [SerializeField] bool wouldAcceptDropped;
     [SerializeField] UnityEvent onSuccess;
     [SerializeField] UnityEvent onFail;
     [SerializeField] UnityEvent<Dragable> onHover;
@@ -20,6 +21,10 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
             onSuccess.Invoke();
         } else {
             onFail.Invoke();
+        }
+
+        if (wouldAcceptDropped) {
+            return;
         }
 
         throw new DragableRejected();
