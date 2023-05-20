@@ -31,6 +31,8 @@ public class NameUtil : MonoBehaviour {
             );
         }
 
+        input.text = PlayerPrefs.GetString("name", "");
+
         foreach(var button in buttons) {
             button.interactable = false;
             Debug.Log("Kapatıldı");
