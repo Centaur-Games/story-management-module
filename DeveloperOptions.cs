@@ -41,6 +41,15 @@ public class DeveloperOptions : MonoBehaviour
         return loadedObject;
     }
 
+    [MenuItem("Centaur Games/Take ScreenShot")]
+    public static void takeScreenshot() {
+        Guid uid = System.Guid.NewGuid();
+        if(!Directory.Exists("Assets/Images/Screenshoots")) Directory.CreateDirectory("Assets/Images/Screenshoots/");
+        ScreenCapture.CaptureScreenshot($"Assets/Images/Screenshoots/{uid}.jpg");
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     [MenuItem("GameObject/UI/Basic Animated Object")]
     static void createBasicAnimatedObject(){
         var loadedPrefabResource = LoadPrefabFromFile("UIElements/BasicAnimatedObject/BasicAnimatedObject");
