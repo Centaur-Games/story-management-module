@@ -169,7 +169,7 @@ public class AnimatedObject : MonoBehaviour
         StoryManager.pendingAnims.Remove(gameObject);
     }
 
-    [System.Obsolete("Bunun yerine go(Vector2) kullan")]
+    // [System.Obsolete("Bunun yerine go(Vector2) kullan")]
     public void go(string vector) {
         var x = vector.Split("|");
         go(new Vector2(float.Parse(x[0]), float.Parse(x[1])));
