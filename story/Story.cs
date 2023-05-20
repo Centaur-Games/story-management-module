@@ -34,26 +34,33 @@ public struct StoryState {
     /// <summary>Bu durumun bağlı olduğu story</summary>
     [HideInInspector] public Story owner;
 
+    [FoldoutGroup("State")]
+    [Space]
     [ShowIf("canVisible")]
     /// <summary>Bu durum pushlandığında yüklenmesi beklenen image</summary>
     public Sprite bgSprite;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary>Eklemeleli olarak açılacak objeler, state poplandığında kapatılır.</summary>
     public AnimatedObject[] iActiveObjects;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary>the dialog calls</summary>
     public DialogData[] iActiveDialogs;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary>Zorla açılacak objeler, state poplandığında kapatılmaz.</summary>
     public AnimatedObject[] iForcedActiveObjects;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary>Zorla kapatılacak objeler</summary>
     public AnimatedObject[] iForcedClosedObjects;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary>State poplandığında galeriye eklenecek fotograf/fotograflar</summary>
     public Image[] pushToGalleryAfter;
@@ -62,10 +69,12 @@ public struct StoryState {
     /// değişikliklerinde iç sayacın bozulmaması için kullanılan sayaç</summary>
     public int? stateCounter;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisible")]
     /// <summary> storymanager tarafidan yapilan state degisikliklerinde cagirilacak dinleyiciler</summary>
     public StoryPushListeners listeners;
 
+    [FoldoutGroup("State")]
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
 
@@ -74,6 +83,7 @@ public struct StoryState {
 
     bool visibilite;
 
+    [FoldoutGroup("State")]
     [ShowIf("canVisibleForButton")]
     [Button("Görünürlüğü aç/kapa")]
     public void s() {
@@ -82,6 +92,7 @@ public struct StoryState {
 
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
+
 }
 
 [System.Serializable]
