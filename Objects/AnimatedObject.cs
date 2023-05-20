@@ -62,6 +62,8 @@ public class AnimatedObject : MonoBehaviour
 
         if (state == gameObject.activeSelf) {
             Debug.Log($"{gameObject.name} objesi zaten {(state ? "açık" : "kapalı")}.");
+            mustBeClosed = false;
+            gameObject.SetActive(state);
             return;
         }
 

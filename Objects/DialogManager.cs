@@ -75,8 +75,12 @@ public class DialogManager : MonoBehaviour {
 
         string newText = "";
 
-        if(index != LastIndex) {
+        if(index != LastIndex && DeveloperOptions.typeWriter) {
             foreach(var a in characters) {
+                if(!DeveloperOptions.typeWriter) {
+                    field.text = text[index];
+                    break;
+                }
                 yield return new WaitForSecondsRealtime(multiple);
 
                 newText += EmojiDecoder(a);
