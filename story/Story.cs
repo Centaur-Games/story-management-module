@@ -3,6 +3,10 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 [System.Serializable]
 public struct BubbleVertAlignment {
     public BubbleVertical vert;
@@ -34,33 +38,36 @@ public struct StoryState {
     /// <summary>Bu durumun bağlı olduğu story</summary>
     [HideInInspector] public Story owner;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
+    [SerializeField] string SpecialStateName;
+
+    [FoldoutGroup("$getSerialNumber")]
     [Space]
     [ShowIf("canVisible")]
     /// <summary>Bu durum pushlandığında yüklenmesi beklenen image</summary>
     public Sprite bgSprite;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary>Eklemeleli olarak açılacak objeler, state poplandığında kapatılır.</summary>
     public AnimatedObject[] iActiveObjects;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary>the dialog calls</summary>
     public DialogData[] iActiveDialogs;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary>Zorla açılacak objeler, state poplandığında kapatılmaz.</summary>
     public AnimatedObject[] iForcedActiveObjects;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary>Zorla kapatılacak objeler</summary>
     public AnimatedObject[] iForcedClosedObjects;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary>State poplandığında galeriye eklenecek fotograf/fotograflar</summary>
     public Image[] pushToGalleryAfter;
@@ -69,12 +76,12 @@ public struct StoryState {
     /// değişikliklerinde iç sayacın bozulmaması için kullanılan sayaç</summary>
     public int? stateCounter;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisible")]
     /// <summary> storymanager tarafidan yapilan state degisikliklerinde cagirilacak dinleyiciler</summary>
     public StoryPushListeners listeners;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
 
@@ -83,7 +90,7 @@ public struct StoryState {
 
     bool visibilite;
 
-    [FoldoutGroup("State")]
+    [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisibleForButton")]
     [Button("Görünürlüğü aç/kapa")]
     public void s() {
@@ -92,7 +99,21 @@ public struct StoryState {
 
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
+    string getSerialNumber() {
+        if(SpecialStateName != null && SpecialStateName != "") return SpecialStateName;
 
+        int i = 0;
+        try {
+            foreach (var item in owner.getStates) {
+                if(item.GetHashCode() == this.GetHashCode()) {
+                    return "State "+i.ToString() + (nextStory != null ? " (Next Story)" : "");
+                }
+                i++;
+            }
+        } catch {}
+
+        return "Unknown State";
+    }
 }
 
 [System.Serializable]
@@ -117,7 +138,18 @@ public class Story : MonoBehaviour {
     [SerializeField] protected Image bgImage;
 
     /// <summary>Bu storynin içerdiği durumlar.</summary>
+    [OnValueChanged("statesOnChanged")]
     [SerializeField] protected StoryState[] states;
+    [HideInInspector] public StoryState[] getStates => states;
+
+#if UNITY_EDITOR
+    [OnInspectorInit]
+    void statesOnChanged() {
+        for (int i = 0; i < states.Length; i++) {
+            states[i].owner = this;
+        }
+    }
+#endif
 
     /// <summary>Bu objenin herhangi bir state verilmeden pushlanması durumunda kullanılacak olan
     /// states dizisinin ilk elamanını dönden varsayılan durum</summary>
