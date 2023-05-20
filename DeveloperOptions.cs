@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +37,56 @@ public class DeveloperOptions : MonoBehaviour
             throw new FileNotFoundException("...no file found - please check the configuration");
         }
         return loadedObject;
+    }
+
+    [MenuItem("GameObject/UI/Basic Animated Object")]
+    static void createBasicAnimatedObject(){
+        var loadedPrefabResource = LoadPrefabFromFile("UIElements/BasicAnimatedObject/BasicAnimatedObject");
+        if(Selection.activeGameObject == null) {
+            var canvas = new GameObject("canvas", typeof(Canvas));
+            canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.AddComponent<CanvasScaler>();
+            canvas.AddComponent<GraphicRaycaster>();
+            canvas.AddComponent<DragDropManager>();
+
+            Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform);
+        } else {
+            bool hasCanvas = false;
+
+            GameObject canvas = null;
+
+            int i = 0;
+            while(i < 15) {
+                GameObject obj = Selection.activeGameObject;
+                for(int a = 0; a < i; a++) {
+                    try {
+                        obj = obj.transform.parent.gameObject;
+                    } catch {
+                        break;
+                    }
+                }
+
+                Canvas canvasComp = obj.GetComponent<Canvas>();
+
+                if(canvasComp != null) {
+                    hasCanvas = true;
+                    canvas = Selection.activeGameObject.gameObject;
+                    break;
+                }
+                i++;
+            }
+
+            if(!hasCanvas) {
+                canvas = new GameObject("canvas", typeof(Canvas));
+                canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+                canvas.AddComponent<CanvasScaler>();
+                canvas.AddComponent<GraphicRaycaster>();
+                canvas.AddComponent<DragDropManager>();
+            }
+
+            if(canvas == null) return;
+            Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform);
+        }
     }
 #endif
 
