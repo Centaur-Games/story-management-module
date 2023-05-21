@@ -90,16 +90,16 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
     }
 
     public void ButtonClick() {
+        _open = !_open;
+
         // animation
         try {
-            foreach(var e in  affecteds) e.playAnim(!_open ? "entry" : "out", () => {}, false);
-            if(_open) _rectTransform.sizeDelta = _datas.mainButtonTransform.rect.size;
+            foreach(var e in  affecteds) e.playAnim(_open ? "entry" : "out", () => {}, false);
+            if(!_open) _rectTransform.sizeDelta = _datas.mainButtonTransform.rect.size;
         } catch {
             Debug.Log("Dropdown hızdan dolayı kısıtlandı");
             return;
         }
-
-        _open = !_open;
 
         if (_open) _rectTransform.sizeDelta = _startSize;
     }
