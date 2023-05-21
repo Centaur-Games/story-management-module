@@ -30,7 +30,8 @@ public class DeveloperOptions : MonoBehaviour
     [RuntimeInitializeOnLoadMethod()]
     static void OnAfterLoad() {
         var loadedPrefabResource = LoadPrefabFromFile("DeveloperOptions");
-        Instantiate(loadedPrefabResource);
+        GameObject go = Instantiate(loadedPrefabResource) as GameObject;
+        DontDestroyOnLoad(go);
     }
 
     private static UnityEngine.Object LoadPrefabFromFile(string filename) {
