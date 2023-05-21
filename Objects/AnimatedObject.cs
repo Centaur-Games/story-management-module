@@ -55,10 +55,13 @@ public class AnimatedObject : MonoBehaviour
 
     void Awake() {
         animator = GetComponent<Animator>();
+        rectTransform = GetComponent<RectTransform>();
+
+        animating = false;
+        targetPos = rectTransform.anchoredPosition;
     }
 
     void _pop(bool state, string outAnim, string entryAnim) {
-        Debug.LogWarning($"_pop:: obj: {gameObject.name}, target: {state}, {outAnim}, {entryAnim}\n{new System.Diagnostics.StackTrace()}");
 
         if (state == gameObject.activeSelf) {
             Debug.Log($"{gameObject.name} objesi zaten {(state ? "açık" : "kapalı")}.");
@@ -196,13 +199,6 @@ public class AnimatedObject : MonoBehaviour
     RectTransform rectTransform;
     [SerializeField] [Range(1,10)] float speed = 5;
     [SerializeField] float epsilon = 0.1f;
-
-    void Start() {
-        animating = false;
-
-        rectTransform = GetComponent<RectTransform>();
-        targetPos = rectTransform.anchoredPosition;
-    }
 
     void Update() {
         if (!animating) return;
