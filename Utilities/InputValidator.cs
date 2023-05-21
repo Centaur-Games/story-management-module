@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(TMPro.TMP_InputField))]
 public class InputValidator : MonoBehaviour, IInputValidateable {
     [SerializeField] string correctAns;
+    [SerializeField] bool caseSensitive;
+
     private bool _locked = false;
     public bool locked { get => _locked; set {
         InitializeField();
@@ -27,7 +29,7 @@ public class InputValidator : MonoBehaviour, IInputValidateable {
     public bool correct {
         get {
             InitializeField();
-            return field.text == correctAns;
+            return (caseSensitive ? field.text : field.text.ToLower()) == (caseSensitive ? correctAns : correctAns.ToLower());
         }
     }
 }
