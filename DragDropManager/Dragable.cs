@@ -1,17 +1,17 @@
 using UnityEngine;
 
 public class Dragable : MonoBehaviour {
-    RectTransform rectTransform;
+    protected RectTransform rectTransform;
 
-    [SerializeField] bool freeDragable = false;
-    [SerializeField] float returnSpeed = 1;
+    [SerializeField] protected bool freeDragable = false;
+    [SerializeField] protected float returnSpeed = 1;
 
     [SerializeField] public bool active = true;
 
-    Vector3 startPos;
-    Vector3 targetPos;
-    DropTarget lastOwner;
-    bool dragging;
+    protected Vector3 startPos;
+    protected Vector3 targetPos;
+    protected DropTarget lastOwner;
+    protected bool dragging;
 
     public DropTarget owner {
         get => lastOwner;
