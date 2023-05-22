@@ -1,12 +1,20 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
+public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidateable {
     [SerializeField] Dragable targetDragable;
     [SerializeField] bool wouldAcceptDropped;
+    [SerializeField] bool centerDropped;
+
     [SerializeField] UnityEvent onSuccess;
     [SerializeField] UnityEvent onFail;
     [SerializeField] UnityEvent<Dragable> onHover;
+
+    Dragable currDragable;
+    bool _locked = false;
+
+    bool IInputValidateable.correct => currDragable == targetDragable;
+    bool IInputValidateable.locked { get => _locked; set => _locked = value; }
 
     public void setTargetDragable(Dragable dragable) {
         targetDragable = dragable;
@@ -17,6 +25,10 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
     }
 
     void IDropTargetListener.OnDrop(Dragable dragable) {
+        if (_locked || currDragable != null) {
+            throw new DragableRejected();
+        }
+
         if (dragable == targetDragable) {
             onSuccess.Invoke();
         } else {
@@ -24,6 +36,12 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
         }
 
         if (wouldAcceptDropped) {
+            if (centerDropped) {
+                dragable.SetWorldSpaceTargetPos(transform.position);
+            }
+
+            currDragable = dragable;
+
             return;
         }
 
@@ -34,10 +52,16 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener {
         onHover.Invoke(dragable);
     }
 
+    void IDropTargetListener.OnElementDragStart(Dragable dragable) {
+        currDragable = null;
+    }
+
+    void IDropTargetListener.OnElementDragCancel(Dragable dragable) {
+        currDragable = dragable;
+    }
+
     void IDropTargetListener.OnDropCancel(Dragable dragable) {}
-    void IDropTargetListener.OnElementDragCancel(Dragable dragable) {}
-    void IDropTargetListener.OnElementDragEnd(Dragable dragable, DropTarget droppedTarget) {}
-    void IDropTargetListener.OnElementDragStart(Dragable dragable) {}
     void IDropTargetListener.OnHoverExit(Dragable dragable) {}
     void IDropTargetListener.OnHoverStay(Dragable dragable) {}
+    void IDropTargetListener.OnElementDragEnd(Dragable dragable, DropTarget droppedTarget) {}
 }
