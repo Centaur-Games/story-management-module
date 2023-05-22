@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidateable {
     [SerializeField] Dragable targetDragable;
+    [SerializeField] Dragable targetDragable2;
     [SerializeField] bool wouldAcceptDropped;
     [SerializeField] bool centerDropped;
 
@@ -13,8 +14,11 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidat
     Dragable currDragable;
     bool _locked = false;
 
-    bool IInputValidateable.correct => currDragable == targetDragable;
-    bool IInputValidateable.locked { get => _locked; set => _locked = value; }
+    bool IInputValidateable.correct => (currDragable == targetDragable || currDragable == targetDragable2) && currDragable != null;
+    bool IInputValidateable.locked { get => _locked; set {
+        _locked = value;
+        currDragable?.SetActivation(!value);
+    }}
 
     public void setTargetDragable(Dragable dragable) {
         targetDragable = dragable;
@@ -29,7 +33,7 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidat
             throw new DragableRejected();
         }
 
-        if (dragable == targetDragable) {
+        if (dragable == targetDragable || dragable == targetDragable2) {
             onSuccess.Invoke();
         } else {
             onFail.Invoke();
