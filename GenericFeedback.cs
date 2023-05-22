@@ -74,6 +74,17 @@ public class GenericFeedback : MonoBehaviour {
         animator.Play("out");
     }
 
+    public void showSucces() {
+        Show("Tebrikler Doğru Eşleştirdin", "Bütün parçaları doğru yerlere koymayı başardın", true, () => {
+            GenericFeedback.Close();
+        });
+    }
+    public void showWrong() {
+        Show("Tekrar Deneyelim", "Bazı parçaları yanlış yerlere yerleştirdin", false, () => {
+            GenericFeedback.Close();
+        });
+    }
+
     public static void Show(string title, string content, bool isSuccess, UnityAction act) {
         instance._Show(title, content, isSuccess, act);
     }
