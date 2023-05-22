@@ -5,6 +5,14 @@ using System.Collections.Generic;
 public class NotepadManager : MonoBehaviour {
     [SerializeField] UnityEvent autoControlCorrectCallbacks;
     [SerializeField] UnityEvent autoControlWrongCallbacks;
+    [SerializeField] UnityEvent[] auxiliaryCorrectCallbacks;
+    [SerializeField] UnityEvent[] auxiliaryWrongCallbacks;
+
+    int _invokeAuxiliary = -1;
+    public int invokeAuxiliary {
+        get => _invokeAuxiliary;
+        set => _invokeAuxiliary = value;
+    }
 
     public int pageCount { get => transform.childCount; }
     int currPage = 0;
@@ -172,7 +180,11 @@ public class NotepadManager : MonoBehaviour {
 
                 if (validateable != null) {
                     if (!validateable.correct && !validateable.locked) {
-                        autoControlWrongCallbacks.Invoke();
+                        if (_invokeAuxiliary >= 0) {
+                            auxiliaryWrongCallbacks[_invokeAuxiliary].Invoke();
+                        } else {
+                            autoControlWrongCallbacks.Invoke();
+                        }
                         throw new System.Exception("wrong ans");
                     }
 
@@ -187,7 +199,11 @@ public class NotepadManager : MonoBehaviour {
         }
 
         if (depth == 1 && compDone) {
-            autoControlCorrectCallbacks.Invoke();
+            if (_invokeAuxiliary >= 0) {
+                auxiliaryCorrectCallbacks[_invokeAuxiliary].Invoke();
+            } else {
+                autoControlCorrectCallbacks.Invoke();
+            }
         }
 
         depth--;
@@ -203,7 +219,7 @@ public class NotepadManager : MonoBehaviour {
 
         foreach (var child in matchPage(currPage)) {
             if (!child.open && (lastobj?.open ?? false)) {
-                break;
+                continue;
             }
 
             lastobj = child;
