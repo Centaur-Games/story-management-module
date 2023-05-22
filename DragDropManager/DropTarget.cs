@@ -1,4 +1,5 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public interface IDropTargetListener {
     /// <summary>Called once when a Dragable object holding mouse pointer enters the target</summary>
@@ -29,8 +30,11 @@ public interface IDropTargetListener {
 }
 
 public class DropTarget : MonoBehaviour {
+    [DetailedInfoBox("GameObject tag must be 'dropTarget'", "This script will not run when dropTarget tag is not given", InfoMessageType.Error, "tagControl")]
     [SerializeField] MonoBehaviour toBeCalled;
     public bool active;
+
+    bool tagControl => gameObject.tag != "dropTarget";
 
     public bool _active {
         get => active;

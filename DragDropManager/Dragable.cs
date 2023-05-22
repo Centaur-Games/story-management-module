@@ -1,17 +1,21 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class Dragable : MonoBehaviour {
     protected RectTransform rectTransform;
 
-    [SerializeField] protected bool freeDragable = false;
+    [DetailedInfoBox("GameObject tag must be 'dragable'", "This script will not run when draggable tag is not given", InfoMessageType.Error, "tagControl")]
     [SerializeField] protected float returnSpeed = 1;
-
+    [SerializeField] protected bool freeDragable = false;
     [SerializeField] public bool active = true;
+
+    bool tagControl => gameObject.tag != "dragable";
 
     protected Vector3 startPos;
     protected Vector3 targetPos;
     protected DropTarget lastOwner;
     protected bool dragging;
+
 
     public DropTarget owner {
         get => lastOwner;
