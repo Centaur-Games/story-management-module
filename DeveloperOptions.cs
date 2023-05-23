@@ -113,6 +113,14 @@ public class DeveloperOptions : MonoBehaviour
         instance.StartCoroutine(animationEnumerator);
     }
 
+    public static void nextStory() {
+        StoryManager.pushNextState(false);
+    }
+
+    public static void backStory() {
+        StoryManager.backStory(1);
+    }
+
     public static void setTypeWriter(){ 
         typeWriter = instance.typeWriterToggle.isOn;
     }
