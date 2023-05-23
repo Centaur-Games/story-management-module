@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -39,5 +40,9 @@ public class GameManager : MonoBehaviour
     public static void OpenMaximizeImage(Image image) {
         instance.MaximizeImage.transform.parent.gameObject.SetActive(true);
         instance.MaximizeImage.sprite = image.sprite;
+    }
+
+    public static void ResetLevel(int index) {
+        SceneManager.LoadScene(index);
     }
 }
