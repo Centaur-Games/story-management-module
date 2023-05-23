@@ -28,6 +28,8 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
 
     [SerializeField] AnimatedObject[] affecteds;
 
+    [SerializeField] GraphicRaycaster overridedRaycaster;
+
     Button selectedButton;
 
     private RectTransform _rectTransform;
@@ -111,7 +113,11 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
         eventData.position = Input.mousePosition;
 
         results.Clear();
-        GameManager.raycaster.Raycast(eventData, results);
+        if(overridedRaycaster != null) {
+            overridedRaycaster.Raycast(eventData, results);
+        } else {
+            GameManager.raycaster.Raycast(eventData, results);
+        }
 
         foreach (var result in results) {
             if (result.gameObject.tag == "dropDownButton") {
