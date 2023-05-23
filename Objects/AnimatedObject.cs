@@ -195,7 +195,7 @@ public class AnimatedObject : MonoBehaviour
     }
 
     bool animating = false;
-    Vector2 targetPos;
+    [HideInInspector] public Vector2 targetPos;
     RectTransform rectTransform;
     [SerializeField] [Range(1,10)] float speed = 5;
     [SerializeField] float epsilon = 0.1f;
