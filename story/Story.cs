@@ -38,36 +38,43 @@ public struct StoryState {
     /// <summary>Bu durumun bağlı olduğu story</summary>
     [HideInInspector] public Story owner;
 
+    [EnableIf("isUnlocked")]
     [FoldoutGroup("$getSerialNumber")]
     [SerializeField] string SpecialStateName;
 
-    [FoldoutGroup("$getSerialNumber")]
     [Space]
+    [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>Bu durum pushlandığında yüklenmesi beklenen image</summary>
     public Sprite bgSprite;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>Eklemeleli olarak açılacak objeler, state poplandığında kapatılır.</summary>
     public AnimatedObject[] iActiveObjects;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>the dialog calls</summary>
     public DialogData[] iActiveDialogs;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>Zorla açılacak objeler, state poplandığında kapatılmaz.</summary>
     public AnimatedObject[] iForcedActiveObjects;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>Zorla kapatılacak objeler</summary>
     public AnimatedObject[] iForcedClosedObjects;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary>State poplandığında galeriye eklenecek fotograf/fotograflar</summary>
     public Image[] pushToGalleryAfter;
@@ -77,10 +84,12 @@ public struct StoryState {
     public int? stateCounter;
 
     [FoldoutGroup("$getSerialNumber")]
+    [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
     /// <summary> storymanager tarafidan yapilan state degisikliklerinde cagirilacak dinleyiciler</summary>
     public StoryPushListeners listeners;
 
+    [EnableIf("isUnlocked")]
     [FoldoutGroup("$getSerialNumber")]
     /// <summary>switchToNextState cağırıldığında eğer nextActivity yok ise pushlanacak olan story</summary>
     public Story nextStory;
@@ -88,14 +97,25 @@ public struct StoryState {
     //// <summary>the restoring state for the pushed nextActivity to return to</summary>
     public PusherState pusherState;
 
-    bool visibilite;
-
+    [EnableIf("isUnlocked")]
     [FoldoutGroup("$getSerialNumber")]
     [ShowIf("canVisibleForButton")]
-    [Button("Görünürlüğü aç/kapa")]
+    [Button("$getVisibleButtonText")]
     public void s() {
         visibilite = !visibilite;
     }
+
+    [FoldoutGroup("$getSerialNumber")]
+    [Button("$getLockerButtonText")]
+    void LockVars() {
+        isUnlocked = !isUnlocked;
+    }
+
+    string getLockerButtonText => isUnlocked ? "Kilitle" : "Kilidi Aç";
+    string getVisibleButtonText => visibilite ? "Görünürlüğü Kapat" : "Görünürlüğü Aç";
+
+    bool visibilite;
+    bool isUnlocked;
 
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
