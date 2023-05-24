@@ -168,10 +168,11 @@ public class NotepadManager : MonoBehaviour {
     public void doAutoCheck(Transform obj) {
         int depth = 0;
         bool compDone = false;
-        doAutoCheck(transform, ref depth, ref compDone);
+        bool isWrong = false;
+        doAutoCheck(transform, ref depth, ref compDone, ref isWrong);
     }
-
-    public void doAutoCheck(Transform obj, ref int depth, ref bool compDone) {
+ 
+    public void doAutoCheck(Transform obj, ref int depth, ref bool compDone, ref bool isWrong) {
         depth++;
 
         foreach (var child in childOf(obj)) {
@@ -180,12 +181,17 @@ public class NotepadManager : MonoBehaviour {
 
                 if (validateable != null) {
                     if (!validateable.correct && !validateable.locked) {
-                        if (_invokeAuxiliary >= 0) {
-                            auxiliaryWrongCallbacks[_invokeAuxiliary].Invoke();
-                        } else {
-                            autoControlWrongCallbacks.Invoke();
+                        // throw new System.Exception("wrong ans");
+                        if(!isWrong) {
+                            if (_invokeAuxiliary >= 0) {
+                                auxiliaryWrongCallbacks[_invokeAuxiliary].Invoke();
+                            } else {
+                                autoControlWrongCallbacks.Invoke();
+                            }
                         }
-                        throw new System.Exception("wrong ans");
+
+                        isWrong = true;
+                        continue;
                     }
 
                     if (!validateable.locked) {
@@ -194,9 +200,11 @@ public class NotepadManager : MonoBehaviour {
                     }
                 }
 
-                doAutoCheck(child.transform, ref depth, ref compDone);
+                doAutoCheck(child.transform, ref depth, ref compDone, ref isWrong);
             }
         }
+
+        if(isWrong) return;
 
         if (depth == 1 && compDone) {
             if (_invokeAuxiliary >= 0) {

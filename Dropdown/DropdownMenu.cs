@@ -62,7 +62,14 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
     private bool _open = false;
 
     public bool correct {
-        get => (_choosen == -1 ? false : correctAnswer == _items[_choosen]);
+        get {
+            bool isCorrect = (_choosen == -1 ? false : correctAnswer == _items[_choosen]);
+
+            if(isCorrect) OnSucces.Invoke();
+            else OnWrong.Invoke();
+
+            return isCorrect;
+        }
     }
 
     private void Start() {
