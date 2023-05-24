@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public class DropdownMenu : MonoBehaviour, IInputValidateable
 {
@@ -16,19 +17,41 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
         }
     }}
 
+    [Title("Options")]
+
+    [TabGroup("Preferences")]
     [SerializeField] public string correctAnswer;
-    [SerializeField] private DropdownSettings _datas;
-    [SerializeField] private Color SelectedColor;
-    [SerializeField] private Color NonSelectColor;
-
-    [SerializeField] private string[] _items;
+    [TabGroup("Preferences")]
     [SerializeField] private string _emptyText = "";
+    [TabGroup("Preferences")]
+    [SerializeField] private string[] _items;
 
+    [Space(15)]
+    [Title("Preferences")]
+
+    [TabGroup("Preferences")]
+    [SerializeField] private Color SelectedColor;
+    [TabGroup("Preferences")]
+    [SerializeField] private Color NonSelectColor;
+    [TabGroup("Preferences")]
     [SerializeField] private float _spacing;
 
+    [Space(15)]
+    [Title("Requirements")]
+
+    [TabGroup("Preferences")]
+    [SerializeField] private DropdownSettings _datas;
+    [TabGroup("Preferences")]
+    [SerializeField] GraphicRaycaster overridedRaycaster;
+    [TabGroup("Preferences")]
     [SerializeField] AnimatedObject[] affecteds;
 
-    [SerializeField] GraphicRaycaster overridedRaycaster;
+    [TabGroup("Callbacks")]
+    public UnityEvent OnDropdownChoosed;
+    [TabGroup("Callbacks")]
+    public UnityEvent OnSucces;
+    [TabGroup("Callbacks")]
+    public UnityEvent OnWrong;
 
     Button selectedButton;
 
@@ -37,8 +60,6 @@ public class DropdownMenu : MonoBehaviour, IInputValidateable
 
     private int _choosen = -1;
     private bool _open = false;
-
-    public UnityEvent OnDropdownChoosed;
 
     public bool correct {
         get => (_choosen == -1 ? false : correctAnswer == _items[_choosen]);

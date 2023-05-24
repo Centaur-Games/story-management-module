@@ -1,15 +1,26 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public class DropdownSettings : MonoBehaviour
 {
-    [SerializeField] private Transform _content;
-    [SerializeField] private RectTransform _scrollview;
-    [SerializeField] private GameObject _buttonPrefab;
-    [SerializeField] private Button _mainButton;
-    [SerializeField] public GameObject expandImage;
-    
+    bool attributesIsOpen = false;
+    string getButtonName => attributesIsOpen ? "Değişkenleri Gizle" : "Değişkenleri Göster";
+
+    [ShowIf("attributesIsOpen")][SerializeField] private Transform _content;
+    [ShowIf("attributesIsOpen")][SerializeField] private RectTransform _scrollview;
+    [ShowIf("attributesIsOpen")][SerializeField] private GameObject _buttonPrefab;
+    [ShowIf("attributesIsOpen")][SerializeField] private Button _mainButton;
+    [ShowIf("attributesIsOpen")][SerializeField] public GameObject expandImage;
+
+    // Odin
+    [Button("$getButtonName")]
+    void setWindowState() {
+        attributesIsOpen = !attributesIsOpen;
+    }
+    //
+
     private TextMeshProUGUI _mainButtonText;
     private RectTransform _mainButtonTransform;
     private RectTransform _contentTransform;
