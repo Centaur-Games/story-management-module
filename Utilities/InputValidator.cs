@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(TMPro.TMP_InputField))]
 public class InputValidator : MonoBehaviour, IInputValidateable {
     [SerializeField] string correctAns;
+    [SerializeField] List<string> acceptableAnswers = new List<string>(); 
+
     [SerializeField] bool caseSensitive;
 
     private bool _locked = false;
@@ -29,7 +32,22 @@ public class InputValidator : MonoBehaviour, IInputValidateable {
     public bool correct {
         get {
             InitializeField();
-            return (caseSensitive ? field.text : field.text.ToLower()) == (caseSensitive ? correctAns : correctAns.ToLower());
+            bool isCorrect = false;
+
+            //correct ans
+            if((caseSensitive ? field.text : field.text.ToLower()) == (caseSensitive ? correctAns : correctAns.ToLower())) isCorrect = true;
+
+            foreach(string correct in acceptableAnswers) {
+                if(!caseSensitive && field.text.ToLower() == correct.ToLower()) {
+                    isCorrect = true;
+                    field.text = correctAns;
+                } else if(caseSensitive && field.text == correct) {
+                    isCorrect = true;
+                    field.text =  correctAns;
+                }
+            }
+
+            return isCorrect;
         }
     }
 }
