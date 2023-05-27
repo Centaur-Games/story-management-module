@@ -8,6 +8,7 @@ public class CheckMultipleState : MonoBehaviour
 {
     [SerializeField] int StateCount = 0;
     [SerializeField] UnityEvent onComplete;
+    [SerializeField] UnityEvent onReset;
 
     int count = 0;
 
@@ -16,5 +17,10 @@ public class CheckMultipleState : MonoBehaviour
         if(StateCount == count && onComplete != null) {
             onComplete.Invoke();
         }
+    }
+
+    public void reset() {
+        StateCount = 0;
+        onReset.Invoke();
     }
 }
