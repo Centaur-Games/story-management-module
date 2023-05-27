@@ -117,6 +117,9 @@ public struct StoryState {
     bool visibilite;
     bool isUnlocked;
 
+    public void setLockState(bool _isUnlocked) => isUnlocked = _isUnlocked;
+    public bool getIsUnlocked => isUnlocked;
+
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
     string getSerialNumber() {
@@ -169,6 +172,41 @@ public class Story : MonoBehaviour {
             states[i].owner = this;
         }
     }
+
+    [HorizontalGroup("Buttons")]
+    [DisableIf("$isAllLocked")]
+    [Button("Lock All")]
+    void lockAll() {
+        for (int i = 0; i < states.Length; i++) {
+            states[i].setLockState(false);
+        }
+    }
+
+    [HorizontalGroup("Buttons")]
+    [DisableIf("$isAllUnLocked")]
+    [Button("Unlock All")]
+    void unlockAll() {
+        for (int i = 0; i < states.Length; i++) {
+            states[i].setLockState(true);
+        }
+    }
+
+    bool isAllLocked() {
+        for (int i = 0; i < states.Length; i++) {
+            if(states[i].getIsUnlocked) return false;
+        }
+
+        return true;
+    }
+
+    bool isAllUnLocked() {
+        for (int i = 0; i < states.Length; i++) {
+            if(!states[i].getIsUnlocked) return false;
+        }
+
+        return true;
+    }
+
 #endif
 
     /// <summary>Bu objenin herhangi bir state verilmeden pushlanması durumunda kullanılacak olan
