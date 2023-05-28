@@ -56,7 +56,7 @@ public class Pourable : Dragable {
 
     public void StopPour() {
         secondaryPourReserve.fillAmount =
-            pourReserve.fillAmount / reserveMaxFill;
+            (pourReserve.fillAmount / reserveMaxFill) * secondaryPourReserveMaxFill;
 
         pourLine.SetActive(false);
         sidewaysImage.SetActive(false);
