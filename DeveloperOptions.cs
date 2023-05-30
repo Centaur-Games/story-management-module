@@ -42,6 +42,14 @@ public class DeveloperOptions : MonoBehaviour
         return loadedObject;
     }
 
+    [MenuItem("Centaur Games/Toogle Object _a")]
+    public static void toogleObject() {
+        Undo.RecordObjects(Selection.gameObjects, "Objects active toggles changed");
+        foreach(GameObject go in Selection.gameObjects) {
+            go.SetActive(!go.activeSelf);
+        }
+    }
+
     [MenuItem("Centaur Games/Take ScreenShot")]
     public static void takeScreenshot() {
         Guid uid = System.Guid.NewGuid();
