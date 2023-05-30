@@ -69,7 +69,14 @@ public class DeveloperOptions : MonoBehaviour
             canvas.AddComponent<GraphicRaycaster>();
             canvas.AddComponent<DragDropManager>();
 
-            Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform);
+            GameObject go = Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform) as GameObject;
+            go.name = "Basic Animated Object";
+
+            Undo.RegisterCreatedObjectUndo(canvas, "Canvas created with Basic Animated objects");
+
+            Selection.activeGameObject = go;
+            var e = new Event { keyCode = KeyCode.F2, type = EventType.KeyDown }; // or Event.KeyboardEvent("f2");
+            EditorWindow.focusedWindow.SendEvent(e);
         } else {
             bool hasCanvas = false;
 
@@ -105,7 +112,15 @@ public class DeveloperOptions : MonoBehaviour
             }
 
             if(canvas == null) return;
-            Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform);
+            GameObject go = Instantiate(loadedPrefabResource, Vector2.zero, Quaternion.identity, canvas.transform) as GameObject;
+            go.name = "Basic Animated Object";
+
+            if(!hasCanvas) Undo.RegisterCreatedObjectUndo(canvas, "Canvas created with Basic Animated objects");
+            else Undo.RegisterCreatedObjectUndo(go, "Created Basic Animated objects");
+
+            Selection.activeGameObject = go;
+            var e = new Event { keyCode = KeyCode.F2, type = EventType.KeyDown }; // or Event.KeyboardEvent("f2");
+            EditorWindow.focusedWindow.SendEvent(e);
         }
     }
 #endif
