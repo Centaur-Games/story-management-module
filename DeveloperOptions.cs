@@ -42,6 +42,29 @@ public class DeveloperOptions : MonoBehaviour
         return loadedObject;
     }
 
+    [MenuItem("GameObject/Apply Scale For UI Elements", false, 0)]
+    [MenuItem("Centaur Games/Apply Scale For UI Elements #a")]
+    public static void applyScale() {
+        if(Selection.gameObjects.Length == 0) return;
+
+        List<RectTransform> rects = new List<RectTransform>();
+
+        foreach(var go in Selection.gameObjects) {
+            RectTransform rect = go.GetComponent<RectTransform>();
+            if(rect == null) continue;
+            if(rect.localScale == Vector3.one) continue;
+            rects.Add(rect);
+        }
+
+        Undo.RecordObjects(rects.ToArray(), "Applied scales");
+
+        foreach(var rect in rects) {
+            rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, rect.sizeDelta.x * rect.localScale.x);
+            rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, rect.sizeDelta.y * rect.localScale.y);
+            rect.localScale = Vector3.one;
+        }
+    }
+
     [MenuItem("Centaur Games/Toogle Object _a")]
     public static void toogleObject() {
         Undo.RecordObjects(Selection.gameObjects, "Objects active toggles changed");
