@@ -183,10 +183,7 @@ public struct StoryState {
     string getVisibleButtonText => visibilite ? "Görünürlüğü Kapat" : "Görünürlüğü Aç";
 
     bool visibilite;
-    bool isUnlocked;
-
-    public void setLockState(bool _isUnlocked) => isUnlocked = _isUnlocked;
-    public bool getIsUnlocked => isUnlocked;
+    [HideInInspector] public bool isUnlocked;
 
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
@@ -248,8 +245,9 @@ public class Story : MonoBehaviour {
     [DisableIf("$isAllLocked")]
     [Button("Lock All")]
     void lockAll() {
+        Debug.Log("Bunun çalışmaması gerek");
         for (int i = 0; i < states.Length; i++) {
-            states[i].setLockState(false);
+            states[i].isUnlocked = false;
         }
     }
 
@@ -258,7 +256,7 @@ public class Story : MonoBehaviour {
     [Button("Unlock All")]
     void unlockAll() {
         for (int i = 0; i < states.Length; i++) {
-            states[i].setLockState(true);
+            states[i].isUnlocked = true;
         }
     }
 
@@ -272,7 +270,7 @@ public class Story : MonoBehaviour {
 
     bool isAllLocked() {
         for (int i = 0; i < states.Length; i++) {
-            if(states[i].getIsUnlocked) return false;
+            if(states[i].isUnlocked) return false;
         }
 
         return true;
@@ -280,7 +278,7 @@ public class Story : MonoBehaviour {
 
     bool isAllUnLocked() {
         for (int i = 0; i < states.Length; i++) {
-            if(!states[i].getIsUnlocked) return false;
+            if(!states[i].isUnlocked) return false;
         }
 
         return true;
