@@ -261,6 +261,7 @@ public class Story : MonoBehaviour {
     [HorizontalGroup("Buttons", 0.1f)]
     [Button("+")]
     void addState() {
+        Undo.RecordObject(this, "new StoryState Added");
         Array.Resize<StoryState>(ref states, states.Length+1);
         statesOnChanged();
     }
