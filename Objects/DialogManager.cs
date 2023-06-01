@@ -10,8 +10,10 @@ using Sirenix.OdinInspector;
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DialogManager : MonoBehaviour {
     [SerializeField] bool runOnStart = true;
+
     [ReadOnly][HorizontalGroup("H", 0.1f)] [SerializeField] public List<int> O = new();
     [OnValueChanged("textOnChanged")][HorizontalGroup("H", 0.9f)] [SerializeField] public List<string> text;
+
     [SerializeField] [Range(0.001f,1)] float multiple = 0.02f;  
     [SerializeField] UnityEvent before;
     [SerializeField] UnityEvent after;

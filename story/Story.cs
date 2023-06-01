@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -231,13 +232,15 @@ public class Story : MonoBehaviour {
 #if UNITY_EDITOR
     [OnInspectorInit]
     void statesOnChanged() {
+        if(states == null || states.Length < 1) return;
+
         for (int i = 0; i < states.Length; i++) {
             if(states[i].owner != null) continue;
             states[i].owner = this;
         }
     }
 
-    [HorizontalGroup("Buttons")]
+    [HorizontalGroup("Buttons", 0.45f)]
     [DisableIf("$isAllLocked")]
     [Button("Lock All")]
     void lockAll() {
@@ -246,13 +249,20 @@ public class Story : MonoBehaviour {
         }
     }
 
-    [HorizontalGroup("Buttons")]
+    [HorizontalGroup("Buttons", 0.45f)]
     [DisableIf("$isAllUnLocked")]
     [Button("Unlock All")]
     void unlockAll() {
         for (int i = 0; i < states.Length; i++) {
             states[i].setLockState(true);
         }
+    }
+
+    [HorizontalGroup("Buttons", 0.1f)]
+    [Button("+")]
+    void addState() {
+        Array.Resize<StoryState>(ref states, states.Length+1);
+        statesOnChanged();
     }
 
     bool isAllLocked() {
