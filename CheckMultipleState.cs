@@ -20,7 +20,7 @@ public class CheckMultipleState : MonoBehaviour
     }
 
     public void reset() {
-        StateCount = 0;
+        count = 0;
         onReset.Invoke();
     }
 }
