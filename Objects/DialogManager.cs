@@ -4,16 +4,26 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 // kullanmak için text mesh pro gerekir
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DialogManager : MonoBehaviour {
     [SerializeField] bool runOnStart = true;
-    [SerializeField] public List<string> text;
+    [ReadOnly][HorizontalGroup("H", 0.1f)] [SerializeField] public List<int> O = new();
+    [OnValueChanged("textOnChanged")][HorizontalGroup("H", 0.9f)] [SerializeField] public List<string> text;
     [SerializeField] [Range(0.001f,1)] float multiple = 0.02f;  
     [SerializeField] UnityEvent before;
     [SerializeField] UnityEvent after;
     TextMeshProUGUI field;
+
+    [OnInspectorInit]
+    void textOnChanged() {
+        O = new();
+        for(int i = 0; i < text.Count; i++) {
+            O.Add(i);
+        }
+    }
 
     [SerializeField] List<specialCharacter> specialCharacters = new();
 
