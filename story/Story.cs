@@ -38,7 +38,7 @@ public struct DialogData {
     [InfoBox("@getDialog()", InfoMessageType.Error, visibleIfMemberName:"@d_mngr != null && (index >= d_mngr.text.Count || index < 0)")]
     [PropertySpace(10)]
     [TabGroup("Dialog Manager")]
-    [Button("Get Last Index")]
+    [Button("Auto Fill Dialog")]
     public void getLastIndex() {
         bool passedSelf = false;
 
@@ -51,10 +51,14 @@ public struct DialogData {
 
             if(parentState.owner.getStates[i-1].iActiveDialogs == null || parentState.owner.getStates[i-1].iActiveDialogs.Length < 1) continue;
 
-            if(d_mngr == null) d_mngr = parentState.owner.getStates[i-1].iActiveDialogs[parentState.owner.getStates[i-1].iActiveDialogs.Length-1].d_mngr;
-            index = parentState.owner.getStates[i-1].iActiveDialogs[parentState.owner.getStates[i-1].iActiveDialogs.Length-1].index + 1;
-
-            break;
+            for(int j = parentState.owner.getStates[i-1].iActiveDialogs.Length; j > 0; i--) {
+                if(parentState.owner.getStates[i-1].iActiveDialogs[j-1].d_mngr != null) {
+                    Undo.RecordObject(parentState.owner, "Dialog auto filled: " + parentState.getSerialNumber());
+                    if(d_mngr == null) d_mngr = parentState.owner.getStates[i-1].iActiveDialogs[j-1].d_mngr;
+                    index = parentState.owner.getStates[i-1].iActiveDialogs[j-1].index + 1;
+                    return;
+                }
+            }
         }
     }
 
