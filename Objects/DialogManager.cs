@@ -9,7 +9,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DialogManager : MonoBehaviour {
     [SerializeField] bool runOnStart = true;
-    [SerializeField] List<string> text;
+    [SerializeField] public List<string> text;
     [SerializeField] [Range(0.001f,1)] float multiple = 0.02f;  
     [SerializeField] UnityEvent before;
     [SerializeField] UnityEvent after;

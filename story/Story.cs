@@ -26,12 +26,16 @@ public struct DialogData {
     [TabGroup("Dialog Manager")]
     [ShowIf("@d_mngr != null")]
     public int index;
+    string getDialog() {
+        if(d_mngr == null) return "";
+        if(index >= d_mngr.text.Count || index < 0) return "Girilen değerde yazı bulunamadı";
 
+        return d_mngr.text[index];
+    }
+
+    [InfoBox("@getDialog()", InfoMessageType.None, visibleIfMemberName:"@d_mngr != null && (index < d_mngr.text.Count && index >= 0)")]
+    [InfoBox("@getDialog()", InfoMessageType.Error, visibleIfMemberName:"@d_mngr != null && (index >= d_mngr.text.Count || index < 0)")]
     [PropertySpace(10)]
-
-    // [ShowIf("@notFoundDialogManager")]
-    // [InfoBox("Dialog Manager not Found")]
-
     [TabGroup("Dialog Manager")]
     [Button("Get Last Index")]
     public void getLastIndex() {
