@@ -245,7 +245,6 @@ public class Story : MonoBehaviour {
     [DisableIf("$isAllLocked")]
     [Button("Lock All")]
     void lockAll() {
-        Debug.Log("Bunun çalışmaması gerek");
         for (int i = 0; i < states.Length; i++) {
             states[i].isUnlocked = false;
         }
