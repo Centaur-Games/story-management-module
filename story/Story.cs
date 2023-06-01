@@ -91,9 +91,10 @@ public struct StoryState {
 
     [EnableIf("isUnlocked")]
     [FoldoutGroup("$getSerialNumber")]
-    [SerializeField] string SpecialStateName;
+    [SerializeField] public string SpecialStateName;
 
-    [Space]
+    [Title("")]
+
     [FoldoutGroup("$getSerialNumber")]
     [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
@@ -181,13 +182,13 @@ public struct StoryState {
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
     public string getSerialNumber() {
-        if(SpecialStateName != null && SpecialStateName != "") return SpecialStateName + (isSelected ? " CURRENT STATE" : "");
+        if(SpecialStateName != null && SpecialStateName != "") return SpecialStateName;
 
         int i = 0;
         try {
             foreach (var item in owner.getStates) {
                 if(item.GetHashCode() == this.GetHashCode()) {
-                    return "State "+i.ToString() + (nextStory != null ? " (Next Story)" : "") + (isSelected ? " CURRENT STATE" : "");
+                    return "State "+i.ToString() + (nextStory != null ? " (Next Story)" : "");
                 }
                 i++;
             }
