@@ -9,24 +9,75 @@ using UnityEditor;
 
 [System.Serializable]
 public struct BubbleVertAlignment {
+    [EnumToggleButtons]
     public BubbleVertical vert;
+    [EnumToggleButtons]
     public BubbleHorizontal hor;
 }
 
 [System.Serializable]
 public struct DialogData {
-    [Title("Dialog Manager Properties")]
+    [HideInInspector] public StoryState parentState;
+
+    [TabGroup("Dialog Manager")]
+    [Space]
     public DialogManager d_mngr;
+
+    [TabGroup("Dialog Manager")]
     [ShowIf("@d_mngr != null")]
     public int index;
 
-    [Space(10)]
-    [Title("Bubble Manager Properties")]
+    [PropertySpace(10)]
+
+    // [ShowIf("@notFoundDialogManager")]
+    // [InfoBox("Dialog Manager not Found")]
+
+    [TabGroup("Dialog Manager")]
+    [Button("Get Last Index")]
+    public void getLastIndex() {
+        bool passedSelf = false;
+
+        for(int i = parentState.owner.getStates.Length; i > 0; i--) {
+            if(parentState.owner.getStates[i-1].getSerialNumber() == parentState.getSerialNumber()) {
+                passedSelf = true;
+                continue;
+            }
+            if(!passedSelf) continue;
+
+            if(parentState.owner.getStates[i-1].iActiveDialogs == null || parentState.owner.getStates[i-1].iActiveDialogs.Length < 1) continue;
+
+            if(d_mngr == null) d_mngr = parentState.owner.getStates[i-1].iActiveDialogs[parentState.owner.getStates[i-1].iActiveDialogs.Length-1].d_mngr;
+            index = parentState.owner.getStates[i-1].iActiveDialogs[parentState.owner.getStates[i-1].iActiveDialogs.Length-1].index + 1;
+
+            break;
+        }
+    }
+
+    [TabGroup("Bubble Manager")]
+    [Space]
     public BubbleManager b_mngr;
-    [ShowIf("@b_mngr != null")]
-    public Vector2 pos;
+
+    [TabGroup("Bubble Manager")]
     [ShowIf("@b_mngr != null")]
     public BubbleVertAlignment alignment;
+
+    [PropertySpace(20)]
+
+    [TabGroup("Bubble Manager")]
+    [ShowIf("@b_mngr != null")]
+    public Vector2 pos;
+
+    [PropertySpace(5)]
+
+    [TabGroup("Bubble Manager")]
+    [ShowIf("@b_mngr != null")]
+    [Button("Get Object Position")]
+    public void getObjectPosition() {
+        RectTransform rect = b_mngr.gameObject.GetComponent<RectTransform>();
+        if(rect == null) return;
+        Undo.RecordObject(parentState.owner, "Bubble Manager pos changed");
+        pos = rect.anchoredPosition;
+    }
 }
 
 /// <summary>
@@ -58,8 +109,15 @@ public struct StoryState {
     [FoldoutGroup("$getSerialNumber")]
     [EnableIf("isUnlocked")]
     [ShowIf("canVisible")]
+    [OnValueChanged("dialogsChanged")]
     /// <summary>the dialog calls</summary>
     public DialogData[] iActiveDialogs;
+
+    void dialogsChanged() {
+        for(int i = 0; i < iActiveDialogs.Length; i++) {
+            iActiveDialogs[i].parentState = this;
+        }
+    }
 
     [FoldoutGroup("$getSerialNumber")]
     [EnableIf("isUnlocked")]
@@ -122,14 +180,14 @@ public struct StoryState {
 
     bool canVisible() => nextStory == null || visibilite;
     bool canVisibleForButton() => nextStory != null;
-    string getSerialNumber() {
-        if(SpecialStateName != null && SpecialStateName != "") return SpecialStateName;
+    public string getSerialNumber() {
+        if(SpecialStateName != null && SpecialStateName != "") return SpecialStateName + (isSelected ? " CURRENT STATE" : "");
 
         int i = 0;
         try {
             foreach (var item in owner.getStates) {
                 if(item.GetHashCode() == this.GetHashCode()) {
-                    return "State "+i.ToString() + (nextStory != null ? " (Next Story)" : "");
+                    return "State "+i.ToString() + (nextStory != null ? " (Next Story)" : "") + (isSelected ? " CURRENT STATE" : "");
                 }
                 i++;
             }
@@ -169,6 +227,7 @@ public class Story : MonoBehaviour {
     [OnInspectorInit]
     void statesOnChanged() {
         for (int i = 0; i < states.Length; i++) {
+            if(states[i].owner != null) continue;
             states[i].owner = this;
         }
     }
