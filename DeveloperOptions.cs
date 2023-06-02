@@ -42,9 +42,9 @@ public class DeveloperOptions : MonoBehaviour
         return loadedObject;
     }
 
-    [MenuItem("GameObject/Apply Scale For UI Elements", false, 0)]
-    [MenuItem("Centaur Games/Apply Scale For UI Elements #a")]
-    public static void applyScale() {
+    [MenuItem("GameObject/Apply Scale UI Elements", false, 0)]
+    [MenuItem("Centaur Games/Apply Scale UI Elements #a")]
+    public static void UIElementsApplyScale() {
         if(Selection.gameObjects.Length == 0) return;
 
         List<RectTransform> rects = new List<RectTransform>();
