@@ -8,6 +8,7 @@ public enum NotepadTickableSelectionType {
 
 public class NotepadTickableColumn : MonoBehaviour, IInputValidateable {
     [SerializeField] NotepadTickableSelectionType selectionType;
+    [SerializeField] bool clearable = false;
 
     List<NotepadTickableElement> children = new List<NotepadTickableElement>();
 
@@ -47,7 +48,11 @@ public class NotepadTickableColumn : MonoBehaviour, IInputValidateable {
             }
         }
 
-        el.Select();
+        if (!el.selected) {
+            el.Select();
+        } else if (clearable) {
+            el.Deselect();
+        }
     }
 
     public void clearColumn() {
