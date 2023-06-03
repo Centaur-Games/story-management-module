@@ -264,6 +264,7 @@ public class Story : MonoBehaviour {
     void addState() {
         Undo.RecordObject(this, "new StoryState Added");
         Array.Resize<StoryState>(ref states, states.Length+1);
+        states[states.Length-1].isUnlocked = true;
         statesOnChanged();
     }
 
