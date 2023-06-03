@@ -6,6 +6,7 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidat
     [SerializeField] Dragable targetDragable2;
     [SerializeField] bool wouldAcceptDropped;
     [SerializeField] bool centerDropped;
+    [SerializeField] bool RejectOnFail;
 
     [SerializeField] UnityEvent onSuccess;
     [SerializeField] UnityEvent onFail;
@@ -28,6 +29,13 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidat
         targetDragable = null;
     }
 
+    public void reset() {
+        if(currDragable is BasicDragable) {
+            (currDragable as BasicDragable).reset();
+            currDragable = null;
+        }
+    }
+
     void IDropTargetListener.OnDrop(Dragable dragable) {
         if (_locked || currDragable != null) {
             throw new DragableRejected();
@@ -37,11 +45,13 @@ public class BasicDropTarget : MonoBehaviour, IDropTargetListener, IInputValidat
             onSuccess.Invoke();
         } else {
             onFail.Invoke();
+            if(RejectOnFail) throw new DragableRejected();
         }
 
         if (wouldAcceptDropped) {
             if (centerDropped) {
                 dragable.SetWorldSpaceTargetPos(transform.position);
+                dragable.SetWorldSpaceStartPos(transform.position);
             }
 
             currDragable = dragable;

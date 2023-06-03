@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,8 +10,22 @@ public class BasicDragable : Dragable
     public float DropScale = 1;
     [Space]
 
+    Vector3 initialPos;
+
     [SerializeField] UnityEvent onDragCallbacks;
     [SerializeField] UnityEvent onDropCallbacks;
+
+    void Awake() {
+        initialPos = GetComponent<RectTransform>().anchoredPosition;
+    }
+
+    public void reset() {
+        startPos = initialPos;
+        targetPos = initialPos;
+
+        active = true;
+        setRectScale(DropScale);
+    }
 
     protected override void Start()
     {
