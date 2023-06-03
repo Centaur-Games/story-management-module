@@ -163,13 +163,7 @@ public class AnimatedObject : MonoBehaviour
         lastOp = null;
         if (!AnimPending) return;
 
-        if (!StoryManager.pendingAnims.Contains(gameObject)) {
-            throw new AnimationEndedAlreadyException(
-                $"AnimatedObject already removed from pendingAnims list: {gameObject.name}"
-            );
-        }
-
-        StoryManager.pendingAnims.Remove(gameObject);
+        if (StoryManager.pendingAnims.Contains(gameObject)) StoryManager.pendingAnims.Remove(gameObject);
     }
 
     // [System.Obsolete("Bunun yerine go(Vector2) kullan")]
