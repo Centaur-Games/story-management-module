@@ -33,7 +33,9 @@ public class Dragable : MonoBehaviour {
         targetPos = rectTransform.anchoredPosition;
     }
 
-    protected virtual void Start() {}
+    protected virtual void Start() {
+        if(rectTransform == null) rectTransform = GetComponent<RectTransform>();
+    }
 
     protected virtual void Update() {
         if (!dragging) {

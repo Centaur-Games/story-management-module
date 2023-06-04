@@ -3,8 +3,6 @@ using UnityEngine.Events;
 
 public class BasicDragable : Dragable
 {
-    RectTransform rect;
-
     [Space]
     public float DragScale = 1;
     public float DropScale = 1;
@@ -14,10 +12,6 @@ public class BasicDragable : Dragable
 
     [SerializeField] UnityEvent onDragCallbacks;
     [SerializeField] UnityEvent onDropCallbacks;
-
-    void Awake() {
-        initialPos = GetComponent<RectTransform>().anchoredPosition;
-    }
 
     public void reset() {
         startPos = initialPos;
@@ -48,8 +42,8 @@ public class BasicDragable : Dragable
     }
 
     void setRectScale(float scale) {
-        if(rect == null) rect = GetComponent<RectTransform>();
-        if(rect == null) return;
-        rect.localScale = Vector3.one * scale;
+        if(rectTransform == null) rectTransform = GetComponent<RectTransform>();
+        if(rectTransform == null) return;
+        rectTransform.localScale = Vector3.one * scale;
     }
 }
