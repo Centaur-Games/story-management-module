@@ -88,7 +88,7 @@ public class NotepadTickableColumn : MonoBehaviour, IInputValidateable {
     }
 
     bool _locked = false;
-    bool IInputValidateable.locked {
+    public bool locked {
         get => _locked;
         set => _locked = value;
     }
