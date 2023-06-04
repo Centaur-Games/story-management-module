@@ -6,6 +6,11 @@ using UnityEngine.UI;
 public class NotepadTickableElement : MonoBehaviour {
     [SerializeField] bool shouldBeSelected;
 
+    public bool _shouldBeSelected {
+        get => shouldBeSelected;
+        set => shouldBeSelected = value;
+    }
+
     [SerializeField] Image tickingSprite;
     [SerializeField] Sprite tickSprite;
     [SerializeField] Sprite noTickSprite;
