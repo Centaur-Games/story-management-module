@@ -27,11 +27,13 @@ public class Dragable : MonoBehaviour {
 
     (GameObject go, DropTarget target) hovering = (null, null);
 
-    protected virtual void Start() {
+    protected virtual void Awake() {
         rectTransform = GetComponent<RectTransform>();
         startPos = rectTransform.anchoredPosition;
         targetPos = rectTransform.anchoredPosition;
     }
+
+    protected virtual void Start() {}
 
     protected virtual void Update() {
         if (!dragging) {
