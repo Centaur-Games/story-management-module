@@ -8,6 +8,11 @@ public class InputValidator : MonoBehaviour, IInputValidateable {
 
     [SerializeField] bool caseSensitive;
 
+    public string _correctAns {
+        get => correctAns;
+        set => correctAns = value;
+    }
+
     private bool _locked = false;
     public bool locked { get => _locked; set {
         InitializeField();
